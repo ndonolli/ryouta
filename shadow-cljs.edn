@@ -1,0 +1,17 @@
+;; shadow-cljs configuration
+{:source-paths
+ ["src/dev"
+  "src/main"
+  "src/test"]
+
+ :dependencies
+ [[reagent "1.0.0"]]
+
+ :builds {:game {:target :browser
+                 :output-dir "public/js"
+                 :asset-path "/js"
+                 :modules {:main {:entries [melissums.core]}}
+                 :devtools {:http-root "public"
+                            :repl-init-ns melissums.core
+                            :http-port 3000
+                            :preloads [shadow.remote.runtime.cljs.browser]}}}}
