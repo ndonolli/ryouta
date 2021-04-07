@@ -1,4 +1,4 @@
-(ns melissums.core
+(ns ryouta.core
   (:require [reagent.dom :as dom]))
 
 (defn hello []

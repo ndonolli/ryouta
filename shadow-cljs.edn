@@ -1,7 +1,6 @@
 ;; shadow-cljs configuration
 {:source-paths
- ["src/dev"
-  "src/main"
+ ["src"
   "src/test"]
 
  :dependencies
@@ -10,8 +9,8 @@
  :builds {:game {:target :browser
                  :output-dir "public/js"
                  :asset-path "/js"
-                 :modules {:main {:entries [melissums.core]}}
+                 :modules {:main {:entries [ryouta.core]}}
                  :devtools {:http-root "public"
-                            :repl-init-ns melissums.core
+                            :repl-init-ns ryouta.core
                             :http-port 3000
                             :preloads [shadow.remote.runtime.cljs.browser]}}}}
