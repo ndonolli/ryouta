@@ -4,7 +4,8 @@
   "src/test"]
 
  :dependencies
- [[reagent "1.0.0"]]
+ [[reagent "1.0.0"]
+  [metosin/malli "0.4.0"]]
 
  :builds {:game {:target :browser
                  :output-dir "public/js"

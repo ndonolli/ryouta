@@ -1,51 +1,56 @@
 (ns ryouta.narrator
   "This module handles the parsing and execution of reading scenes"
-  (:require [clojure.spec.alpha :as s]))
+  (:require [clojure.spec.alpha :as s]
+            [malli.core :as m]
+            [malli.error :as me]))
 
-(def valid-actions #{:scene :enter :exit :pose})
+(def valid-actions #{:scene :enter :exit :pose :says})
 
 (s/def ::direction (s/cat :action keyword?
                           :args (s/+ (s/alt :arg keyword? :arg string?))))
-
-; (def direction (s/and vector? ::direction))
 (s/def ::name string?)
 (s/def ::actor (s/keys :req-un [::name]))
 (s/def ::actors (s/map-of keyword? ::actor))
 (s/def ::setting (s/keys :req-un [::actors]))
-
 (s/def ::script (s/cat :setting ::setting
                        :directions (s/+ (s/and vector? ::direction))))
 
-(defn perform [action args]
-  (tap> [action args]))
+(def Actor [:map
+            [:name string?]])
 
-(defn- validate-direction [[action & args :as direction] setting]
-  (let [err-reason (partial str "Error reading direction: " direction " - ")]
-    (when-not (vector? direction)
-      (throw (js/Error. (err-reason "direction must be a vector type"))))
-    (when-not (> (count direction) 1)
-      (throw (js/Error. (err-reason "direction must contain an action and one or more arguments"))))
-    (when-not (or (valid-actions action) (get-in setting [:actors action]))
-      (throw (js/Error. (err-reason "invalid action or actor: '" action "'"))))))
+(def Action [:fn {:error/fn (fn [{:keys [value]} _] (str "not a valid action: " value))}
+              (partial valid-actions)])
 
-(defn read [script]
-  (let [setting (first script)
-        directions (rest script)]
-    (doseq [[action & args :as direction] directions]
-      (validate-direction direction setting)
-      (perform action args))))
-
-(s/fdef read :args (s/cat :script ::script))
+(def Direction [:catn
+                [:action
+                 [:schema Action]]
+                [:args [:* any?]]])
 
 (def nathan {:name "Nathan Donolli"})
 (def makki {:name "Mackenzie Ferguson"})
 
-(def script_1 [{:actors {:nathan nathan
-                         :makki makki}}
-               [:scene :foo]
-               [:enter :nathan]
-               [:nathan "ayy lmao" :nice]
-               [:makki "nice"]
-               [:exit :nathan]])
+(defn perform [direction]
+  (tap> direction))
 
-(read script_1)
+(def valid-direction? (m/validator Direction))
+
+(defn read [direction]
+  ;; validate
+  (when-not (valid-direction? direction)
+    (throw (js/Error.
+            (str "Error reading direction " direction "\n"
+                 (-> Direction
+                     (m/explain direction)
+                     (me/humanize
+                      {:errors (-> me/default-errors
+                                   (assoc ::m/missing-key {:error/fn (fn [{:keys [in]} _] (str "missing key " (last in)))}))}))))))
+  ;; main
+  (perform direction))
+
+(def scene [[:enter nathan]
+            [:says nathan "ayy lmao" :happy]
+            [:exit nathan]
+            [:exit]])
+
+(doseq [direction scene]
+  (read direction))
