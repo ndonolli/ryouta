@@ -1,16 +1,25 @@
 (ns ryouta.state
   (:require [reagent.core :as r]))
 
-(def default {:vars {}
-              :text "hooww"
-              :ui {:dialogue {:visible false
-                              :content ""}
-                   :actors []}
-              :game {:directions []
-                     :scene {}}})
+(defonce default {:vars {}
+                  :dialogue {:visible false
+                             :content ""}
+                  :actors #{}
+                  :directions []
+                  :history []
+                  :scene {}})
 
-(def db (r/atom default))
+(def db (r/atom {}))
+
+(defn create-db! [opts]
+  (reset! db (merge default opts)))
+
+(defn reset-db! [] (reset! db default))
 
 (add-watch db :log
            (fn [key this old-state new-state]
-             (js/console.log @this)))
+             (tap> @this)))
+
+(def dialogue (r/cursor db [:dialogue]))
+(def directions (r/cursor db [:directions]))
+(def scene (r/cursor db [:scene]))

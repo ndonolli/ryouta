@@ -3,7 +3,8 @@
   (:require [malli.core :as m]
             [malli.error :as me]
             [reagent.core :as r]
-            [ryouta.state :refer [db]]))
+            [ryouta.state :refer [db]]
+            [sci.core]))
 
 (declare VALID-ACTIONS)
 
@@ -12,18 +13,16 @@
     (if (nil? value) empty-msg (str value " " invalid-msg))))
 
 ;; schemas
-(def Actor [:map
-            [:name string?]])
+(defonce Actor [:map
+                [:name string?]])
+(defonce Action [:fn {:error/fn (nil-or-invalid-error "Direction requires an action." "is not a valid action.")}
+                 (partial VALID-ACTIONS)])
 
-(def Action [:fn {:error/fn (nil-or-invalid-error "Direction requires an action." "is not a valid action.")}
-             (fn [action] (seq (VALID-ACTIONS action)))])
-
-(def Direction [:catn
-                [:action keyword?]
-                [:args [:* any?]]])
-
+(defonce Direction [:catn
+                    [:action :keyword]
+                    [:args [:* any?]]])
 ;; global defs
-(def ACTIONS
+(defonce ACTIONS
   {:scene {:schema []}
    :enter {:schema [:cat
                     [:= :enter]
@@ -39,30 +38,56 @@
 
 (defn get-action-schema [action] (get-in ACTIONS [action :schema]))
 
-(def nathan {:name "Nathan Donolli"})
-(def makki {:name "Mackenzie Ferguson"})
 
-;; (defn perform [x] (tap> x))
 (defmulti perform first)
+
 (defmethod perform :scene
-  ([[_ scene opts]]
-   (swap! db assoc-in [:game :scene] scene)))
+  [[_ scene opts]]
+  (swap! db assoc :scene scene))
+
+(defmethod perform :enter
+  [[_ actor]]
+  (swap! db update :actors conj actor))
+
+(defmethod perform :exit
+  [[_ actor]]
+  (swap! db update :actors disj actor))
+
+(defmethod perform :says
+  [[_ actor dialogue]]
+  (swap! db assoc :dialogue {:content dialogue :visible true}))
 
 (def valid-direction? (m/validator Direction))
 
-(defn read "foo" [direction]
-  ;; validate
-  (when-not (valid-direction? direction)
-    (throw (js/Error.
-            (str "\nError reading direction " direction " - "
-                 (-> Direction
-                     (m/explain direction)
-                     (me/humanize
-                      {:errors (-> me/default-errors
-                                   (assoc ::m/missing-key {:error/fn (fn [{:keys [in]} _] (str "missing key " (last in)))}))})
-                     flatten first)))))
-  ;; main
-  (perform direction))
+(defn store-history [direction]
+  (swap! db update :history conj direction))
+
+(defn next-direction []
+  (swap! db update :directions rest))
+
+(defn read! [directions]
+  (let [direction (first directions)]
+    (when-not (nil? direction)
+      (if (valid-direction? direction)
+        (do (perform direction)
+            (store-history direction)
+            (next-direction))
+        
+        (js/console.error 
+         (str "\nError reading direction " direction " - "
+              (-> Direction
+                  (m/explain direction)
+                  (me/humanize
+                   {:errors (-> me/default-errors
+                                (assoc ::m/missing-key {:error/fn (fn [{:keys [in]} _] (str "missing key " (last in)))}))})
+                  flatten first)))))))
+
+
+(def nathan {:name "Nathan Donolli"})
+(def makki {:name "Mackenzie Ferguson"})
+
+(def town {:name "town" :background "https://lumiere-a.akamaihd.net/v1/images/sa_pixar_virtualbg_coco_16x9_9ccd7110.jpeg"})
+(def beach {:name "beach" :background "https://globetrender.com/wp-content/uploads/2020/05/Caribbean-beach.jpg"})
 
 (def scene [[:enter nathan]
             [:says nathan "ayy lmao" :happy]
@@ -78,14 +103,13 @@
              :%2 [[:hello nathan]
                   [:there nathan]]]])
 
-
-(read [:scene {:backdrop "https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png"}])
-
-(defn foo [[a & b]]
-  [a b])
-
-(comment
-  (foo [1 2 3])
-  (perform [:scene {:backdrop "https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png"}])
-  (me/humanize (m/explain (get-action-schema :enter) [:enter])))
-
+(def myscript [[:scene town]
+               [:enter nathan]
+               [:says nathan "hi"]
+               [:says nathan "another one"]
+               [:scene beach]
+               [:enter makki]
+               [:says makki "now it's makki"]
+               [:exit nathan]
+               [:says makki "yoo"]
+               [:choose ["hey" "ya"]]])

@@ -1,15 +1,23 @@
 (ns ryouta.core
   (:require [reagent.dom :as dom]
             [ryouta.crew :as crew]
-            [ryouta.director :as dir]))
+            [ryouta.director :as direct]
+            [ryouta.state :as state]))
 
-(defn hello []
-  [:h1 "hello"])
+
+(defn init
+  ([] (init {}))
+  ([opts]
+   (state/create-db! opts)))
 
 (defn ^:dev/after-load start []
   (dom/render
-   [crew/game-window]
+   [crew/game]
    (.getElementById js/document "app")))
 
+(defn ^:export mygame []
+  (init {:directions direct/myscript}))
+
 (defn ^:export main []
+  (mygame)
   (start))
