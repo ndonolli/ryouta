@@ -39,7 +39,9 @@
 
 (defn get-action-schema [action] (get-in ACTIONS [action :schema]))
 
+(def valid-direction? (m/validator Direction))
 
+;; action dispatch functions
 (defmulti perform first)
 
 (defmethod perform :scene
@@ -47,8 +49,11 @@
   (swap! db assoc :scene scene))
 
 (defmethod perform :enter
-  [[_ actor]]
-  (swap! db update :actors conj (merge actor {:model (second (first (:models actor)))})))
+  [[_ actor model]] 
+   (let [model* (if (nil? model) 
+                  (-> (:models actor) first second) ;; get first item in models as default
+                  model)] 
+     (swap! db update :actors conj (merge actor {:model model*}))))
 
 (defmethod perform :exit
   [[_ actor]]
@@ -64,8 +69,6 @@
   [[_ directions]]
   (doseq [direction directions]
     (perform direction)))
-
-(def valid-direction? (m/validator Direction))
 
 (defn store-history [direction]
   (swap! db update :history conj direction))

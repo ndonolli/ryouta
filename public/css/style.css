@@ -43,11 +43,12 @@
 .ry-dialogue-title {
   position: absolute;
   border: 1px solid black;
-  top: -1em;
+  border-radius: 10px;
+  top: -1.5em;
   left: 70px;
   background: rgb(213, 213, 213, 1);
   height: 2em;
-  padding: 5px;
+  padding: 7px;
   display: flex;
   align-items: center;
   font-size: 1.5em;
