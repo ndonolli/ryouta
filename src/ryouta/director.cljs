@@ -2,7 +2,6 @@
   "This module handles the parsing and execution of reading scenes"
   (:require [malli.core :as m]
             [malli.error :as me]
-            [reagent.core :as r]
             [ryouta.state :refer [db]]
             [sci.core]))
 
@@ -14,7 +13,9 @@
 
 ;; schemas
 (defonce Actor [:map
-                [:name string?]])
+                [:name string?]
+                [:models [:map-of :keyword :string]]])
+
 (defonce Action [:fn {:error/fn (nil-or-invalid-error "Direction requires an action." "is not a valid action.")}
                  (partial VALID-ACTIONS)])
 
@@ -47,15 +48,22 @@
 
 (defmethod perform :enter
   [[_ actor]]
-  (swap! db update :actors conj actor))
+  (swap! db update :actors conj (merge actor {:model (second (first (:models actor)))})))
 
 (defmethod perform :exit
   [[_ actor]]
-  (swap! db update :actors disj actor))
+  (swap! db update :actors 
+         #(set (filter 
+                (fn [current-actor] (not= (:name actor) (:name current-actor))) %))))
 
 (defmethod perform :says
   [[_ actor dialogue]]
-  (swap! db assoc :dialogue {:content dialogue :visible true}))
+  (swap! db assoc :dialogue {:line dialogue :actor (:name actor) :visible true}))
+
+(defmethod perform :group
+  [[_ directions]]
+  (doseq [direction directions]
+    (perform direction)))
 
 (def valid-direction? (m/validator Direction))
 
@@ -83,8 +91,8 @@
                   flatten first)))))))
 
 
-(def nathan {:name "Nathan Donolli"})
-(def makki {:name "Mackenzie Ferguson"})
+(def nathan {:name "Nathan" :models {:default "http://assets.stickpng.com/images/580b57fcd9996e24bc43c2fe.png"}})
+(def makki {:name "Makki" :models {:default "https://i.pinimg.com/originals/fd/0f/2a/fd0f2ae1480569b61e2a1145af8bcbde.png"}})
 
 (def town {:name "town" :background "https://lumiere-a.akamaihd.net/v1/images/sa_pixar_virtualbg_coco_16x9_9ccd7110.jpeg"})
 (def beach {:name "beach" :background "https://globetrender.com/wp-content/uploads/2020/05/Caribbean-beach.jpg"})
@@ -104,12 +112,17 @@
                   [:there nathan]]]])
 
 (def myscript [[:scene town]
-               [:enter nathan]
-               [:says nathan "hi"]
-               [:says nathan "another one"]
-               [:scene beach]
+               [:group [[:enter nathan]
+                        [:says nathan "Hi it's me nathan"]]]
+               [:says nathan "I'm just here chillin in this town"]
+               [:says nathan "...but it would be nice to go to the beach!"]
+               [:group [[:scene beach]
+                        [:says nathan "This is more like it!"]]]
                [:enter makki]
-               [:says makki "now it's makki"]
+               [:says nathan "Who is that babe?"]
+               [:says makki "omg wtf creep"]
+               [:says nathan "Wait...I"]
+               [:says makki "Get lost, loser."]
                [:exit nathan]
-               [:says makki "yoo"]
-               [:choose ["hey" "ya"]]])
+               [:says makki "Finally I have the beach to myself."]
+               [:says makki "Thank you for coming to my TED talk."]])

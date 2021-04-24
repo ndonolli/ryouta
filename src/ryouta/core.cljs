@@ -18,6 +18,12 @@
 (defn ^:export mygame []
   (init {:directions direct/myscript}))
 
+(defn ^:export save []
+  (state/save-game! "save"))
+
+(defn ^:export load []
+  (state/load-game! "save"))
+
 (defn ^:export main []
   (mygame)
   (start))
