@@ -9,7 +9,8 @@
                   :actors #{}
                   :directions []
                   :history []
-                  :scene {}})
+                  :scene {}
+                  :progressible true})
 
 (def db (r/atom {}))
 
@@ -28,7 +29,13 @@
 (def directions (r/cursor db [:directions]))
 (def scene (r/cursor db [:scene]))
 (def actors (r/cursor db [:actors]))
+(def progressible (r/cursor db [:progressible]))
 
+(defmulti dispatch! first)
+
+(defmethod dispatch! :set-progressible
+  [[_ state]]
+  (swap! db assoc :progressible state))
 
 (add-watch db :log
            (fn [key this old-state new-state]

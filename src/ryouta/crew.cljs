@@ -11,7 +11,7 @@
               (swap! typed str (first chars))
               (if-let [next (seq (rest chars))]
                 (js/setTimeout #(type* next) delay)
-                  (js/console.log "done")))]
+                (state/dispatch! [:set-progressible true])))]
       (fn [text delay]
         (when-not (= text @prev-text)
           (reset! prev-text text)
@@ -23,7 +23,7 @@
   (when (:visible @state/dialogue)
     [:div.ry-dialogue
      [:div.ry-dialogue-title (:actor @state/dialogue)]
-     [:div.ry-dialogue-content [typewriter (:line @state/dialogue) 50]]]))
+     [:div.ry-dialogue-content [typewriter (:line @state/dialogue) 20]]]))
 
 (defn actors []
   [:div.ry-actors
@@ -31,7 +31,8 @@
      [:img.ry-actor {:src (:model actor)}])])
 
 (defn global-click-handler []
-  (direct/read! @state/directions))
+  (when @state/progressible
+    (direct/read! @state/directions)))
 
 (defn game []
   [:div.ry-game {:on-click global-click-handler}
