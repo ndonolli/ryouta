@@ -13,6 +13,7 @@
 
 ;; schemas
 (defonce Actor [:map
+                [:_id keyword?]
                 [:name string?]
                 [:models [:map-of :keyword :string]]])
 
@@ -33,7 +34,8 @@
    :pose {:schema []}
    :says {:schema []}
    :choose {:schema []}
-   :case {:schema []}})
+   :case {:schema []}
+   :move {:schema []}})
 
 (defonce VALID-ACTIONS (set (map first ACTIONS)))
 
@@ -49,17 +51,21 @@
   (swap! db assoc :scene scene))
 
 (defmethod perform :enter
-  [[_ actor model]] 
-   (let [model* (if (nil? model) 
-                  (-> (:models actor) first second) ;; get first item in models as default
-                  model)] 
-     (swap! db update :actors conj (merge actor {:model model*}))))
+  [[_ actor {:keys [position model] :as opts}]]
+  (let [model* (if (nil? model)
+                 (-> (:models actor) first second) ;; get first item in models as default
+                 (get-in actor [:models :model]))]
+    (swap! db update :actors assoc
+           (:_id actor) (merge actor {:model model*
+                                      :position position}))))
+
+(defmethod perform :move
+  [[_ {:keys [_id]} position]]
+  (swap! db assoc-in [:actors _id :position] position))
 
 (defmethod perform :exit
   [[_ actor]]
-  (swap! db update :actors 
-         #(set (filter 
-                (fn [current-actor] (not= (:name actor) (:name current-actor))) %))))
+  (swap! db update :actors dissoc (:_id actor)))
 
 (defmethod perform :says
   [[_ actor dialogue]]

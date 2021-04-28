@@ -3,8 +3,13 @@
             [ryouta.state :as state]))
 
 ;; Define your characters
-(def nathan {:name "Nathan" :models {:default "/images/actors/nathan_default.png"}})
-(def makki {:name "Makki" :models {:default "/images/actors/makki_default.png"}})
+(def nathan (ryouta/create-actor 
+             {:name "Nathan"
+              :models {:default "/images/actors/nathan_default.png"}}))
+
+(def makki (ryouta/create-actor
+            {:name "Makki"
+             :models {:default "/images/actors/makki_default.png"}}))
 
 ;; Define your scenes
 (def town {:name "town" :background "/images/scenes/town.jpeg"})
@@ -12,19 +17,21 @@
 
 ;; Define your script
 (def myscript [[:scene town]
-               [:group [[:enter nathan]
+               [:group [[:enter nathan {:position :center}]
                         [:says nathan "Hi it's me nathan"]]]
                [:says nathan "I'm just here chillin in this town"]
                [:says nathan "...but it would be nice to go to the beach!"]
                [:group [[:scene beach]
                         [:says nathan "This is more like it!"]]]
-               [:enter makki]
+               [:group [[:enter makki {:position :right}]
+                        [:move nathan :left]]]
                [:says nathan "Who is that babe?"]
                [:says makki "omg wtf creep"]
                [:says nathan "Wait...I"]
                [:says makki "Get lost, loser."]
                [:exit nathan]
-               [:says makki "Finally I have the beach to myself."]
+               [:group [[:says makki "Finally I have the beach to myself."]
+                        [:move makki :center]]]
                [:says makki "I'm going to say something really long-winded to see how this affects the dialogue.  I wonder how long it can be.  I mean three sentences is a lot to fit in one line of dialogue, don't you agree?"]
                [:says makki "Thank you for coming to my TED talk."]])
 

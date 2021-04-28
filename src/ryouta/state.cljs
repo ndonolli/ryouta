@@ -7,7 +7,7 @@
                              :actor ""
                              :line ""
                              :typing? false}
-                  :actors #{}
+                  :actors {}
                   :directions []
                   :history []
                   :scene {}

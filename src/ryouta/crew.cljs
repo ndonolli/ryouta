@@ -2,7 +2,8 @@
   (:require [reagent.dom :as dom]
             [reagent.core :as r]
             [ryouta.state :as state :refer [db]]
-            [ryouta.director :as direct]))
+            [ryouta.director :as direct]
+            [ryouta.util :as util]))
 
 
 (defn global-click-handler []
@@ -35,8 +36,9 @@
 
 (defn actors []
   [:div.ry-actors
-   (for [actor @state/actors] ^{:key actor}
-     [:img.ry-actor {:src (:model actor)}])])
+   (for [[_id actor] @state/actors] ^{:key _id}
+     [:img.ry-actor {:src (:model actor)
+                     :style {:left (str (util/calc-position (:position actor)) "vw")}}])])
 
 (defn game []
   [:div.ry-game {:on-click global-click-handler}

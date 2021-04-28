@@ -1,6 +1,6 @@
 (ns ryouta.styles
   (:require [garden.core :refer [css]]
-            [garden.units :refer [percent px em]]
+            [garden.units :refer [percent px em vw]]
             [garden.color :refer [rgba]]
             [goog.style])
    (:import [goog.html SafeStyleSheet]
@@ -51,19 +51,16 @@
      'font-size (em 1.5)}]
    
    [:.ry-actors
-    {'display 'flex
-     'align-items 'flex-end
-     'align-self 'flex-end
-     'height (percent 90)
-     'width 'inherit
-     'margin-top (percent 100)
-     'z-index 500
-     'justify-content 'center}]
-   
-   [:.ry-actor 
     {'align-self 'flex-end
      'height (percent 100)
-     'max-width (percent 50)
+     'width 'inherit
+     'margin-top (percent 100)
+     'z-index 500}]
+   
+   [:.ry-actor 
+    {'position 'sticky
+     'height (percent 100)
+     'left (vw 25)
      'object-fit 'cover}]])
 
 ;; storing the style-ref is only to support hot-reloading with styles
