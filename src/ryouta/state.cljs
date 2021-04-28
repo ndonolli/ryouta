@@ -3,9 +3,10 @@
             [cljs.reader :as reader]))
 
 (defonce default {:vars {}
-                  :dialogue {:visible false
+                  :dialogue {:visible? false
                              :actor ""
-                             :line ""}
+                             :line ""
+                             :typing? false}
                   :actors #{}
                   :directions []
                   :history []
@@ -33,9 +34,10 @@
 
 (defmulti dispatch! first)
 
-(defmethod dispatch! :set-progressible
-  [[_ state]]
-  (swap! db assoc :progressible state))
+(defmethod dispatch! :dialogue-line-complete
+  []
+  (swap! db assoc :progressible true)
+  (swap! db assoc-in [:dialogue :typing?] false))
 
 (add-watch db :log
            (fn [key this old-state new-state]

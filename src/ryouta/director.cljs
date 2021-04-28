@@ -63,8 +63,12 @@
 
 (defmethod perform :says
   [[_ actor dialogue]]
-  (swap! db assoc :dialogue {:line dialogue :actor (:name actor) :visible true})
-  (swap! db assoc :progressible false))
+  (swap! db assoc 
+         :dialogue {:line dialogue
+                    :actor (:name actor)
+                    :visible? true
+                    :typing? true}
+         :progressible false))
 
 (defmethod perform :group
   [[_ directions]]

@@ -4,35 +4,39 @@
             [ryouta.state :as state :refer [db]]
             [ryouta.director :as direct]))
 
+
+(defn global-click-handler []
+  (if @state/progressible
+    (direct/read! @state/directions)
+    (if (:typing? @state/dialogue)
+      (state/dispatch! [:dialogue-line-complete]))))
+
 (defn typewriter [text delay] 
   (let [typed (r/atom "")
         prev-text (r/atom "")]
     (letfn [(type* [chars]
               (swap! typed str (first chars))
-              (if-let [next (seq (rest chars))]
-                (js/setTimeout #(type* next) delay)
-                (state/dispatch! [:set-progressible true])))]
+              (let [next (seq (rest chars))]
+                (if (and next (:typing? @state/dialogue))
+                  (js/setTimeout #(type* (seq (rest chars))) delay)
+                  (state/dispatch! [:dialogue-line-complete]))))]
       (fn [text delay]
         (when-not (= text @prev-text)
           (reset! prev-text text)
           (reset! typed "")
           (type* (seq text)))
-        [:span @typed]))))
+        [:span (if (:typing? @state/dialogue) @typed (:line @state/dialogue))]))))
 
 (defn dialogue []
-  (when (:visible @state/dialogue)
+  (when (:visible? @state/dialogue)
     [:div.ry-dialogue
      [:div.ry-dialogue-title (:actor @state/dialogue)]
-     [:div.ry-dialogue-content [typewriter (:line @state/dialogue) 20]]]))
+     [:div.ry-dialogue-content [typewriter (:line @state/dialogue) 50]]]))
 
 (defn actors []
   [:div.ry-actors
    (for [actor @state/actors] ^{:key actor}
      [:img.ry-actor {:src (:model actor)}])])
-
-(defn global-click-handler []
-  (when @state/progressible
-    (direct/read! @state/directions)))
 
 (defn game []
   [:div.ry-game {:on-click global-click-handler}
