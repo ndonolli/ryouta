@@ -62,9 +62,13 @@
    
    [:.ry-actor 
     {'align-self 'flex-end
-     'height (percent 100)}]])
+     'height (percent 100)
+     'max-width (percent 50)
+     'object-fit 'cover}]])
 
-(defn install! []
+;; storing the style-ref is only to support hot-reloading with styles
+(defonce style-ref (atom nil))
+(defn- install* []
   (-> (css
        {:vendors ["webkit" "moz" "o"]
         :auto-prefix #{:background-size}}
@@ -72,3 +76,9 @@
       (Const/from) 
       (SafeStyleSheet/fromConstant)
       (goog.style/installSafeStyleSheet)))
+
+
+(defn install! []
+  (when-not (nil? @style-ref)
+    (goog.style/uninstallStyles @style-ref))
+  (reset! style-ref (install*)))
