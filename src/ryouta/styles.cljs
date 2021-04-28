@@ -64,11 +64,20 @@
     {'align-self 'flex-end
      'height (percent 100)}]])
 
+;; (defn install! []
+;;   (goog.style/installSafeStyleSheet
+;;    (SafeStyleSheet/fromConstant
+;;     (Const/from
+;;      (css
+;;       {:vendors ["webkit" "moz" "o"]
+;;        :auto-prefix #{:background-size}}
+;;       styles)))))
+
 (defn install! []
-  (goog.style/installSafeStyleSheet
-   (SafeStyleSheet/fromConstant
-    (Const/from
-     (css
-      {:vendors ["webkit" "moz" "o"]
-       :auto-prefix #{:background-size}}
-      styles)))))
+  (-> (css
+       {:vendors ["webkit" "moz" "o"]
+        :auto-prefix #{:background-size}}
+       styles)
+      (Const/from) 
+      (SafeStyleSheet/fromConstant)
+      (goog.style/installSafeStyleSheet)))
