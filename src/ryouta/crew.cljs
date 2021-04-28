@@ -31,7 +31,7 @@
   (when (:visible? @state/dialogue)
     [:div.ry-dialogue
      [:div.ry-dialogue-title (:actor @state/dialogue)]
-     [:div.ry-dialogue-content [typewriter (:line @state/dialogue) 50]]]))
+     [:div.ry-dialogue-content [typewriter (:line @state/dialogue) 25]]]))
 
 (defn actors []
   [:div.ry-actors

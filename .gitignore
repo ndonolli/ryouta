@@ -1,5 +1,5 @@
 node_modules/
-public/js
+examples/pets/public/js
 
 /target
 /checkouts

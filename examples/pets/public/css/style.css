@@ -18,6 +18,7 @@
   width: inherit;
   height: inherit;
   display: flex;
+  user-select: none;
 }
 
 .ry-dialogue {

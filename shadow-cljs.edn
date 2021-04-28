@@ -1,18 +1,19 @@
 ;; shadow-cljs configuration
 {:source-paths
  ["src"
-  "src/test"]
+  "src/test"
+  "examples"]
 
  :dependencies
  [[reagent "1.0.0"]
   [metosin/malli "0.4.0"]
   [borkdude/sci "0.2.4"]]
 
- :builds {:game {:target :browser
-                 :output-dir "public/js"
-                 :asset-path "/js"
-                 :modules {:main {:entries [ryouta.core]}}
-                 :devtools {:http-root "public"
-                            :repl-init-ns ryouta.core
-                            :http-port 3000
-                            :preloads [shadow.remote.runtime.cljs.browser]}}}}
+ :builds {:pet-game {:target :browser
+                     :output-dir "examples/pets/public/js"
+                     :asset-path "/js"
+                     :modules {:main {:entries [pets.game]}}
+                     :devtools {:http-root "examples/pets/public"
+                                :repl-init-ns pets.game
+                                :http-port 3000
+                                :preloads [shadow.remote.runtime.cljs.browser]}}}}
