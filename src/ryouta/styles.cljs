@@ -6,7 +6,7 @@
    (:import [goog.html SafeStyleSheet]
             [goog.string Const]))
 
-(def styles 
+(def styles
   [[:.ry-background
     {'background-size 'cover
      'width 'inherit
@@ -27,7 +27,7 @@
      'margin-bottom (percent 2)
      'align-self 'flex-end
      'z-index 1000}]
-   
+
    [:.ry-dialogue-content
     {'padding-top (px 50)
      'padding-left (px 70)
@@ -36,7 +36,7 @@
      'color 'white
      'font-size (em 1.5)
      'font-family 'helvetica}]
-   
+
    [:.ry-dialogue-title
     {'position 'absolute
      'border "1px solid black"
@@ -49,18 +49,19 @@
      'display 'flex
      'align-items 'center
      'font-size (em 1.5)}]
-   
+
    [:.ry-actors
-    {'align-self 'flex-end
+    {'display 'flex
+     'justify-content 'center
+     'align-self 'flex-end
      'height (percent 100)
      'width 'inherit
      'margin-top (percent 100)
      'z-index 500}]
-   
-   [:.ry-actor 
-    {'position 'sticky
+
+   [:.ry-actor
+    {'position 'absolute
      'height (percent 100)
-     'left (vw 25)
      'object-fit 'cover}]])
 
 ;; storing the style-ref is only to support hot-reloading with styles
@@ -70,7 +71,7 @@
        {:vendors ["webkit" "moz" "o"]
         :auto-prefix #{:background-size}}
        styles)
-      (Const/from) 
+      (Const/from)
       (SafeStyleSheet/fromConstant)
       (goog.style/installSafeStyleSheet)))
 

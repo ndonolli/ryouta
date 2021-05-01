@@ -12,7 +12,7 @@
     (if (:typing? @state/dialogue)
       (state/dispatch! [:dialogue-line-complete]))))
 
-(defn typewriter [text delay] 
+(defn typewriter [text delay]
   (let [typed (r/atom "")
         prev-text (r/atom "")]
     (letfn [(type* [chars]
@@ -36,13 +36,16 @@
 
 (defn actors []
   [:div.ry-actors
-   (for [[_id actor] @state/actors] ^{:key _id}
-     [:img.ry-actor {:src (:model actor)
-                     :style {:left (str (util/calc-position (:position actor)) "vw")}}])])
+   (for [[_id actor] @state/actors]
+     ^{:key _id}
+     (let [pos (util/calc-position (:position actor))]
+       [:img.ry-actor {:src (:model actor)
+                       :style {:left (when (:left pos) (str (:left pos) "vw"))
+                               :right (when (:right pos) (str (:right pos) "vw"))}}]))])
 
 (defn game []
   [:div.ry-game {:on-click global-click-handler}
-   [:div.ry-background {:style 
+   [:div.ry-background {:style
                         {:background (str "url(\"" (:background @state/scene) "\") no-repeat center center fixed")}}
     [dialogue]
     [actors]]])

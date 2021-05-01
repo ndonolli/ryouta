@@ -1,19 +1,17 @@
 (ns ryouta.util)
 
-(defn generate-id 
+(defn generate-id
   "Generates a unique identifier"
-  [] 
+  []
   (-> (js/Math.random)
       (.toString 16)
       (.slice 2)
       (keyword)))
 
-(defn calc-position 
-  "Calculates the vw amount for an actor's positioning"
-  [pos] 
-  (if (keyword? pos)
-    (case pos
-      :left 0
-      :center 25
-      :right 50)
-    (/ pos 2)))
+(defn calc-position
+  "Calculates the vw amount for either left or right for an actor's positioning"
+  [pos]
+  (case pos
+      :left {:left 0}
+      :center {}
+      :right {:right 0}))
