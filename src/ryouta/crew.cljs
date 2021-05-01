@@ -1,10 +1,12 @@
 (ns ryouta.crew
-  (:require [reagent.dom :as dom]
+  (:require ["react-transition-group" :as rtg]
             [reagent.core :as r]
             [ryouta.state :as state :refer [db]]
             [ryouta.director :as direct]
             [ryouta.util :as util]))
 
+(def css-transition-group
+  (r/adapt-react-class rtg/CSSTransitionGroup))
 
 (defn global-click-handler []
   (if @state/progressible
@@ -35,13 +37,18 @@
      [:div.ry-dialogue-content [typewriter (:line @state/dialogue) 25]]]))
 
 (defn actors []
-  [:div.ry-actors
+  [css-transition-group
+   {:transition-name "ry-actor"
+    :transition-enter-timeout 500
+    :transition-leave-timeout 500
+    :class "ry-actors"}
    (for [[_id actor] @state/actors]
      ^{:key _id}
      (let [pos (util/calc-position (:position actor))]
        [:img.ry-actor {:src (:model actor)
-                       :style {:left (when (:left pos) (str (:left pos) "vw"))
-                               :right (when (:right pos) (str (:right pos) "vw"))}}]))])
+                        :style {:left (when (:left pos) (str (:left pos) "vw"))
+                                :right (when (:right pos) (str (:right pos) "vw"))}
+                       }]))])
 
 (defn game []
   [:div.ry-game {:on-click global-click-handler}

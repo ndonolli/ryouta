@@ -3,8 +3,8 @@
             [garden.units :refer [percent px em vw]]
             [garden.color :refer [rgba]]
             [goog.style])
-   (:import [goog.html SafeStyleSheet]
-            [goog.string Const]))
+  (:import [goog.html SafeStyleSheet]
+           [goog.string Const]))
 
 (def styles
   [[:.ry-background
@@ -62,7 +62,12 @@
    [:.ry-actor
     {'position 'absolute
      'height (percent 100)
-     'object-fit 'cover}]])
+     'object-fit 'cover}
+    [:&-enter
+     {'opacity 0.01}
+     [:&-active
+      {'opacity 1
+       'transition "opacity 500ms ease-in"}]]]])
 
 ;; storing the style-ref is only to support hot-reloading with styles
 (defonce style-ref (atom nil))
@@ -80,3 +85,15 @@
   (when-not (nil? @style-ref)
     (goog.style/uninstallStyles @style-ref))
   (reset! style-ref (install*)))
+
+(def foo [:.ry-actor
+          {'position 'absolute
+           'height (percent 100)
+           'object-fit 'cover}
+          [:&-enter
+           {'opacity 0.01}
+           [:&-active
+            {'opacity 1
+             'transition "opacity 500ms ease-in"}]]])
+
+(comment (css foo))
