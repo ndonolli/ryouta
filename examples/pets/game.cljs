@@ -3,7 +3,7 @@
             [ryouta.state :as state]))
 
 ;; Define your characters
-(def nathan (ryouta/create-actor 
+(def nathan (ryouta/create-actor
              {:name "Nathan"
               :models {:default "/images/actors/nathan_default.png"}}))
 
@@ -15,25 +15,31 @@
 (def town {:name "town" :background "/images/scenes/town.jpeg"})
 (def beach {:name "beach" :background "/images/scenes/beach.jpg"})
 
+(def script_beach [[:group [[:scene beach]
+                            [:says nathan "This is more like it!"]]]
+                   [:group [[:enter makki {:position :right}]
+                            [:move nathan :left]]]
+                   [:says nathan "Who is that babe?"]
+                   [:says makki "omg wtf creep"]
+                   [:says nathan "Wait...I"]
+                   [:says makki "Get lost, loser."]
+                   [:exit nathan]
+                   [:group [[:says makki "Finally I have the beach to myself."]
+                            [:move makki :center]]]
+                   [:says makki "I'm going to say something really long-winded to see how this affects the dialogue.  I wonder how long it can be.  I mean three sentences is a lot to fit in one line of dialogue, don't you agree?"]
+                   [:says makki "Thank you for coming to my TED talk."]
+                   [:choose [[:option1 "Option 1"]
+                             [:option2 "Option 2"]]]
+                   [:choose ["Option 1" "Option 2"]]])
+
+(def script_town [[:scene town]
+                  [:group [[:enter nathan {:position :center}]
+                           [:says nathan "Hi it's me nathan"]]]
+                  [:says nathan "I'm just here chillin in this town"]
+                  [:says nathan "...but it would be nice to go to the beach!"]
+                  script_beach])
 ;; Define your script
-(def myscript [[:scene town]
-               [:group [[:enter nathan {:position :center}]
-                        [:says nathan "Hi it's me nathan"]]]
-               [:says nathan "I'm just here chillin in this town"]
-               [:says nathan "...but it would be nice to go to the beach!"]
-               [:group [[:scene beach]
-                        [:says nathan "This is more like it!"]]]
-               [:group [[:enter makki {:position :right}]
-                        [:move nathan :left]]]
-               [:says nathan "Who is that babe?"]
-               [:says makki "omg wtf creep"]
-               [:says nathan "Wait...I"]
-               [:says makki "Get lost, loser."]
-               [:exit nathan]
-               [:group [[:says makki "Finally I have the beach to myself."]
-                        [:move makki :center]]]
-               [:says makki "I'm going to say something really long-winded to see how this affects the dialogue.  I wonder how long it can be.  I mean three sentences is a lot to fit in one line of dialogue, don't you agree?"]
-               [:says makki "Thank you for coming to my TED talk."]])
+(def myscript [script_town])
 
 ;; This is your main function to initialize the game
 (defn ^:export main []

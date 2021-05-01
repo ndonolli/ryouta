@@ -4,14 +4,15 @@
 
 (defonce default {:vars {}
                   :dialogue {:visible? false
+                             :typing? false
+                             :progressible? true ;; can the game be progressed by a click anywhere on the screen?
                              :actor ""
                              :line ""
-                             :typing? false}
+                             :choices nil}
                   :actors {}
                   :directions []
                   :history []
-                  :scene {}
-                  :progressible true})
+                  :scene {}})
 
 (def db (r/atom {}))
 
@@ -30,14 +31,20 @@
 (def directions (r/cursor db [:directions]))
 (def scene (r/cursor db [:scene]))
 (def actors (r/cursor db [:actors]))
-(def progressible (r/cursor db [:progressible]))
+(def progressible? (r/cursor db [:dialogue :progressible?]))
+(def vars (r/cursor db [:vars]))
 
 (defmulti dispatch! first)
 
 (defmethod dispatch! :dialogue-line-complete
   []
-  (swap! db assoc :progressible true)
-  (swap! db assoc-in [:dialogue :typing?] false))
+  (swap! db update :dialogue assoc :typing? false :progressible? true))
+
+(defmethod dispatch! :choice-selected
+  [[_ label]]
+  (tap> label)
+  (swap! db assoc-in [:vars label] true)
+  (swap! db update :dialogue assoc :choices nil))
 
 (add-watch db :log
            (fn [key this old-state new-state]

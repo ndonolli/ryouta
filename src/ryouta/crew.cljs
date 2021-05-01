@@ -9,7 +9,7 @@
   (r/adapt-react-class rtg/CSSTransitionGroup))
 
 (defn global-click-handler []
-  (if @state/progressible
+  (if @state/progressible?
     (direct/read! @state/directions)
     (if (:typing? @state/dialogue)
       (state/dispatch! [:dialogue-line-complete]))))
@@ -36,6 +36,13 @@
      [:div.ry-dialogue-title (:actor @state/dialogue)]
      [:div.ry-dialogue-content [typewriter (:line @state/dialogue) 25]]]))
 
+(defn choices []
+  (when-let [options (:choices @state/dialogue)]
+    [:div.ry-choices
+     (for [{:keys [label option]} options]
+       ^{:key label}
+       [:div.ry-choice {:on-click #(state/dispatch! [:choice-selected label])} option])]))
+
 (defn actors []
   [css-transition-group
    {:transition-name "ry-actor"
@@ -46,13 +53,13 @@
      ^{:key _id}
      (let [pos (util/calc-position (:position actor))]
        [:img.ry-actor {:src (:model actor)
-                        :style {:left (when (:left pos) (str (:left pos) "vw"))
-                                :right (when (:right pos) (str (:right pos) "vw"))}
-                       }]))])
+                       :style {:left (when (:left pos) (str (:left pos) "vw"))
+                               :right (when (:right pos) (str (:right pos) "vw"))}}]))])
 
 (defn game []
   [:div.ry-game {:on-click global-click-handler}
    [:div.ry-background {:style
                         {:background (str "url(\"" (:background @state/scene) "\") no-repeat center center fixed")}}
     [dialogue]
+    [choices]
     [actors]]])

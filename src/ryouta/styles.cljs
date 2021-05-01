@@ -67,7 +67,27 @@
      {'opacity 0.01}
      [:&-active
       {'opacity 1
-       'transition "opacity 500ms ease-in"}]]]])
+       'transition "opacity 500ms ease-in"}]]]
+
+   [:.ry-choices
+    {'width 'inherit
+     'height 'inherit
+     'position 'absolute
+     'display 'flex
+     'flex-direction 'column
+     'justify-content 'center
+     'z-index 1000
+     'align-items 'center}]
+
+   [:.ry-choice
+    {'padding (em 1)
+     'margin (em 1)
+     'background (rgba 0 0 0 0.7)
+     'color 'white
+     'border-radius (em 1)
+     'font-size (em 1.5)}
+    [:&:hover
+     {'background (rgba 0 50 50 0.6)}]]])
 
 ;; storing the style-ref is only to support hot-reloading with styles
 (defonce style-ref (atom nil))

@@ -15,3 +15,6 @@
       :left {:left 0}
       :center {}
       :right {:right 0}))
+
+(defn log! [data]
+  (js/console.log (clj->js data)))

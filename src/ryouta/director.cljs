@@ -3,6 +3,7 @@
   (:require [malli.core :as m]
             [malli.error :as me]
             [ryouta.state :refer [db]]
+            [ryouta.util :refer [log!]]
             [sci.core]))
 
 (declare VALID-ACTIONS)
@@ -23,6 +24,10 @@
 (defonce Direction [:catn
                     [:action :keyword]
                     [:args [:* any?]]])
+
+(defonce Choices [:cat [:+ :string]])
+(defonce ChoicesLabeled [:cat [:+ [:tuple keyword? string?]]])
+
 ;; global defs
 (defonce ACTIONS
   {:scene {:schema []}
@@ -69,37 +74,55 @@
 
 (defmethod perform :says
   [[_ actor dialogue]]
-  (swap! db assoc 
+  (swap! db assoc
          :dialogue {:line dialogue
                     :actor (:name actor)
                     :visible? true
-                    :typing? true}
-         :progressible false))
+                    :typing? true
+                    :progressible? false}))
 
 (defmethod perform :group
   [[_ directions]]
   (doseq [direction directions]
     (perform direction)))
 
+(defmethod perform :choose
+  [[_ options]]
+  (let [choices
+        (cond
+          (m/validate Choices options)
+          (map-indexed
+           (fn [i option] {:label (keyword (str "%" (inc i)))
+                           :option option})
+           options)
+
+          (m/validate ChoicesLabeled options)
+          (map (fn [[label option]] {:label label :option option})
+               options))]
+
+    (swap! db update :dialogue assoc :choices choices)))
+
 (defn store-history [direction]
   (swap! db update :history conj direction))
 
-(defn next-direction []
-  (swap! db update :directions rest))
+(defn set-next-directions [directions]
+  (swap! db assoc :directions directions))
 
 (defn read! [directions]
   (let [direction (first directions)]
     (when-not (nil? direction)
-      (if (valid-direction? direction)
-        (do (perform direction)
-            (store-history direction)
-            (next-direction))
-        
-        (js/console.error 
-         (str "\nError reading direction " direction " - "
-              (-> Direction
-                  (m/explain direction)
-                  (me/humanize
-                   {:errors (-> me/default-errors
-                                (assoc ::m/missing-key {:error/fn (fn [{:keys [in]} _] (str "missing key " (last in)))}))})
-                  flatten first)))))))
+      (if (vector? (first direction))
+        (read! direction) ;; direction is a vector of nested directions
+        (if (valid-direction? direction)
+          (do (perform direction)
+              (store-history direction)
+              (set-next-directions (rest directions)))
+
+          (js/console.error
+           (str "\nError reading direction " direction " - "
+                (-> Direction
+                    (m/explain direction)
+                    (me/humanize
+                     {:errors (-> me/default-errors
+                                  (assoc ::m/missing-key {:error/fn (fn [{:keys [in]} _] (str "missing key " (last in)))}))})
+                    flatten first))))))))
