@@ -13,6 +13,7 @@
  :builds {:pet-game {:target :browser
                      :output-dir "examples/pets/public/js"
                      :asset-path "/js"
+                     :js-options {:js-provider :shadow}
                      :modules {:main {:entries [pets.game]}}
                      :devtools {:http-root "examples/pets/public"
                                 :repl-init-ns pets.game
