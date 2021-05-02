@@ -1,7 +1,7 @@
 (ns ryouta.crew
   (:require ["react-transition-group" :as rtg]
             [reagent.core :as r]
-            [ryouta.state :as state :refer [db]]
+            [ryouta.state :as state]
             [ryouta.director :as direct]
             [ryouta.util :as util]))
 
@@ -9,10 +9,17 @@
   (r/adapt-react-class rtg/CSSTransitionGroup))
 
 (defn global-click-handler []
-  (if @state/progressible?
-    (direct/read! @state/directions)
-    (if (:typing? @state/dialogue)
-      (state/dispatch! [:dialogue-line-complete]))))
+  (cond
+    (> (count (:choices @state/dialogue)) 0)
+    nil
+
+    (:typing? @state/dialogue) 
+    (direct/dispatch! [:dialogue-line-complete])
+
+    (:progressible? @state/dialogue)
+    (do
+      (js/console.log "clickclick")
+      (direct/read! @state/directions))))
 
 (defn typewriter [text delay]
   (let [typed (r/atom "")
@@ -22,7 +29,7 @@
               (let [next (seq (rest chars))]
                 (if (and next (:typing? @state/dialogue))
                   (js/setTimeout #(type* (seq (rest chars))) delay)
-                  (state/dispatch! [:dialogue-line-complete]))))]
+                  (direct/dispatch! [:dialogue-line-complete]))))]
       (fn [text delay]
         (when-not (= text @prev-text)
           (reset! prev-text text)
@@ -41,7 +48,7 @@
     [:div.ry-choices
      (for [{:keys [label option]} options]
        ^{:key label}
-       [:div.ry-choice {:on-click #(state/dispatch! [:choice-selected label])} option])]))
+       [:div.ry-choice {:on-click #(direct/dispatch! [:choice-selected label])} option])]))
 
 (defn actors []
   [css-transition-group

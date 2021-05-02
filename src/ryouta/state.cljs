@@ -1,5 +1,6 @@
 (ns ryouta.state
   (:require [reagent.core :as r]
+            [ryouta.util :refer [log!]]
             [cljs.reader :as reader]))
 
 (defonce default {:vars {}
@@ -31,21 +32,8 @@
 (def directions (r/cursor db [:directions]))
 (def scene (r/cursor db [:scene]))
 (def actors (r/cursor db [:actors]))
-(def progressible? (r/cursor db [:dialogue :progressible?]))
 (def vars (r/cursor db [:vars]))
-
-(defmulti dispatch! first)
-
-(defmethod dispatch! :dialogue-line-complete
-  []
-  (swap! db update :dialogue assoc :typing? false :progressible? true))
-
-(defmethod dispatch! :choice-selected
-  [[_ label]]
-  (tap> label)
-  (swap! db assoc-in [:vars label] true)
-  (swap! db update :dialogue assoc :choices nil))
 
 (add-watch db :log
            (fn [key this old-state new-state]
-             (tap> @this)))
+             (comment log! @this)))

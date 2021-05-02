@@ -30,7 +30,10 @@
                    [:says makki "Thank you for coming to my TED talk."]
                    [:choose [[:option1 "Option 1"]
                              [:option2 "Option 2"]]]
-                   [:choose ["Option 1" "Option 2"]]])
+                   [:cond
+                    :option1 [:says makki "you have chosen option1"]
+                    :option2 [[:says makki "you have chosen option2"]
+                              [:says makki "here is an extra thing"]]]])
 
 (def script_town [[:scene town]
                   [:group [[:enter nathan {:position :center}]
@@ -38,8 +41,14 @@
                   [:says nathan "I'm just here chillin in this town"]
                   [:says nathan "...but it would be nice to go to the beach!"]
                   script_beach])
+
+(def nest_test [[:scene town]
+                [:enter nathan {:position :center}]
+                [:says nathan "not nested"]
+                [[[:says nathan "but this is"]
+                  [:says nathan "and so is this"]]]])
 ;; Define your script
-(def myscript [script_town])
+(def myscript [script_beach])
 
 ;; This is your main function to initialize the game
 (defn ^:export main []
