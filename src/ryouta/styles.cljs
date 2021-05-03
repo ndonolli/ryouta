@@ -9,6 +9,7 @@
 (def styles
   [[:.ry-background
     {'background-size 'cover
+     'position 'absolute
      'width 'inherit
      'height 'inherit
      'display 'flex}]

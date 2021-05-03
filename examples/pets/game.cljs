@@ -44,11 +44,15 @@
 
 (def nest_test [[:scene town]
                 [:enter nathan {:position :center}]
-                [:says nathan "not nested"]
-                [[[:says nathan "but this is"]
-                  [:says nathan "and so is this"]]]])
+                [:choose [[:option1 "Option 1"]
+                          [:option2 "Option 2"]]]
+                [:cond 
+                 :option1 [:says nathan "option1"]
+                 :option2 [[:says nathan "option2"]
+                           [:says nathan "another 1"]]]
+                [:says nathan "not gonna happen"]])
 ;; Define your script
-(def myscript [script_beach])
+(def myscript script_town)
 
 ;; This is your main function to initialize the game
 (defn ^:export main []

@@ -16,9 +16,8 @@
       :center {}
       :right {:right 0}))
 
-(defn log! 
-  ([data] (js/console.log (clj->js data)))
-  ([label data] (js/console.log label (clj->js data))))
+(defn log! [& data] 
+  (apply js/console.log (clj->js data)))
 
 (defn in?
   "true if coll contains elm"

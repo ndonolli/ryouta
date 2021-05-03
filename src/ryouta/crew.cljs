@@ -14,7 +14,7 @@
     nil
 
     (:typing? @state/dialogue) 
-    (direct/dispatch! [:dialogue-line-complete])
+    (direct/perform! [:dialogue-line-complete])
 
     (:progressible? @state/dialogue)
     (do
@@ -29,7 +29,7 @@
               (let [next (seq (rest chars))]
                 (if (and next (:typing? @state/dialogue))
                   (js/setTimeout #(type* (seq (rest chars))) delay)
-                  (direct/dispatch! [:dialogue-line-complete]))))]
+                  (direct/perform! [:dialogue-line-complete]))))]
       (fn [text delay]
         (when-not (= text @prev-text)
           (reset! prev-text text)
@@ -48,7 +48,7 @@
     [:div.ry-choices
      (for [{:keys [label option]} options]
        ^{:key label}
-       [:div.ry-choice {:on-click #(direct/dispatch! [:choice-selected label])} option])]))
+       [:div.ry-choice {:on-click #(direct/perform! [:choice-selected label])} option])]))
 
 (defn actors []
   [css-transition-group
