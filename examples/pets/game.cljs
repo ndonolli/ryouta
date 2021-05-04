@@ -15,8 +15,8 @@
 (def town {:name "town" :background "/images/scenes/town.jpeg"})
 (def beach {:name "beach" :background "/images/scenes/beach.jpg"})
 
-(def script_beach [[:group [[:scene beach]
-                            [:says nathan "This is more like it!"]]]
+(def script_beach [[:scene beach]
+                   [:says nathan "This is more like it!"]
                    [:group [[:enter makki {:position :right}]
                             [:move nathan :left]]]
                    [:says nathan "Who is that babe?"]
@@ -40,7 +40,10 @@
                            [:says nathan "Hi it's me nathan"]]]
                   [:says nathan "I'm just here chillin in this town"]
                   [:says nathan "...but it would be nice to go to the beach!"]
-                  script_beach])
+                  [:choose [[:beach "Go to the beach"] [:nah "nah"]]]
+                  [:cond
+                   :beach [script_beach]
+                   :nah [:says nathan "nevermind"]]])
 
 (def nest_test [[:scene town]
                 [:enter nathan {:position :center}]

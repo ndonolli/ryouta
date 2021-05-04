@@ -67,7 +67,20 @@
 
 (defmethod perform* :scene
   [[_ scene opts]]
-  (swap! db assoc :scene scene))
+  (let [default-opts {:transition? true}
+        {:keys [transition?]} (merge default-opts opts)]
+    (if-not transition?
+      (swap! db assoc :scene scene)
+      (do
+        (swap! db (fn [db*] (-> db*
+                                (assoc :overlay? true)
+                                (assoc-in [:dialogue :progressible?] false))))
+        (js/setTimeout
+         #(swap! db (fn [db*] (-> db*
+                                  (assoc :scene scene)
+                                  (assoc :overlay? false)
+                                  (assoc-in [:dialogue :progressible?] true)
+                                  (assoc-in [:dialogue :visible?] false)))) 500)))))
 
 (defmethod perform* :enter
   [[_ actor {:keys [position model] :as opts}]]
@@ -117,7 +130,9 @@
     (swap! db update :dialogue assoc :choices choices :progressible? false)))
 
 (defmethod perform* :if
-  [[_ pred if-cond else-cond]]
+  [[_ pred if-cond else-cond :as direction]]
+  (when (or (nil? pred) (nil? if-cond))
+    (throw (js/Error. (str "Error reading direction :if - a predicate and if-condition are required - " direction))))
   (let [directions (if (get @vars pred) 
                      (vector if-cond) 
                      (if (nil? else-cond) nil (vector else-cond)))
@@ -128,7 +143,7 @@
 (defmethod perform* :cond
   [[_ & clauses]]
   (when (> (mod (count clauses) 2) 0)
-    (throw (js/Error. (str "Error reading direction: uneven number of forms passed to :cond => " clauses))))
+    (throw (js/Error. (str "Error reading direction :cond - uneven number of forms passed - " clauses))))
   (loop [clauses* (partition 2 clauses)]
     (let [[var* directions] (first clauses*)]
       (if (get @vars var*)
@@ -164,7 +179,7 @@
                 (set-next-directions (rest directions))))
 
           (js/console.error
-           (str "\nError reading direction " direction " - "
+           (str "Error reading direction " direction " - "
                 (-> Direction
                     (m/explain direction)
                     (me/humanize

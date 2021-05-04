@@ -17,9 +17,7 @@
     (direct/perform! [:dialogue-line-complete])
 
     (:progressible? @state/dialogue)
-    (do
-      (js/console.log "clickclick")
-      (direct/read! @state/directions))))
+    (direct/read! @state/directions)))
 
 (defn typewriter [text delay]
   (let [typed (r/atom "")
@@ -63,8 +61,14 @@
                        :style {:left (when (:left pos) (str (:left pos) "vw"))
                                :right (when (:right pos) (str (:right pos) "vw"))}}]))])
 
+(defn fade-overlay []
+  [:span.ry-fade-overlay {:style {:opacity (if @state/overlay? 1 0)
+                                  :z-index (if (or @state/overlay? @state/progressible?) 9999 1)}}])
+
 (defn game []
   [:div.ry-game {:on-click global-click-handler}
+   
+   [fade-overlay]
    [:div.ry-background {:style
                         {:background (str "url(\"" (:background @state/scene) "\") no-repeat center center fixed")}}
     [dialogue]

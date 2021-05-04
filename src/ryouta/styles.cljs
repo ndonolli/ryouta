@@ -12,7 +12,15 @@
      'position 'absolute
      'width 'inherit
      'height 'inherit
+     'z-index 1
      'display 'flex}]
+   
+   [:.ry-fade-overlay
+    {'width 'inherit
+     'height 'inherit
+     'background 'black
+     'opacity 0
+     'transition "opacity .5s ease-in-out"}]
 
    [:.ry-game
     {'width 'inherit
@@ -65,9 +73,14 @@
      'height (percent 100)
      'object-fit 'cover}
     [:&-enter
-     {'opacity 0.01}
+     {'opacity 0}
      [:&-active
       {'opacity 1
+       'transition "opacity 500ms ease-in"}]]
+    [:&-leave
+     {'opacity 1}
+     [:&-active
+      {'opacity 0
        'transition "opacity 500ms ease-in"}]]]
 
    [:.ry-choices

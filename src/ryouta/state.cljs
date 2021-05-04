@@ -13,7 +13,8 @@
                   :actors {}
                   :directions []
                   :history []
-                  :scene {}})
+                  :scene {}
+                  :overlay? false})
 
 (def db (r/atom {}))
 
@@ -33,6 +34,8 @@
 (def scene (r/cursor db [:scene]))
 (def actors (r/cursor db [:actors]))
 (def vars (r/cursor db [:vars]))
+(def overlay? (r/cursor db [:overlay?]))
+(def progressible? (r/cursor db [:dialogue :progressible?]))
 
 (add-watch db :log
            (fn [key this old-state new-state]
