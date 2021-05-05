@@ -2,7 +2,7 @@
   "This module handles the parsing and execution of reading scenes"
   (:require [malli.core :as m]
             [malli.error :as me]
-            [ryouta.state :refer [db vars]]
+            [ryouta.state :refer [db vars] :as state]
             [ryouta.util :refer [log! in?]]
             [sci.core]))
 
@@ -80,15 +80,17 @@
                                   (assoc :scene scene)
                                   (assoc :overlay? false)
                                   (assoc-in [:dialogue :progressible?] true)
-                                  (assoc-in [:dialogue :visible?] false)))) 500)))))
+                                  (assoc-in [:dialogue :visible?] false)))) 
+         (:transition-ms @state/game-settings))))))
 
 (defmethod perform* :enter
   [[_ actor {:keys [position model] :as opts}]]
-  (let [model* (if (nil? model)
+  (let [model (if (nil? model)
                  (-> (:models actor) first second) ;; get first item in models as default
-                 (get-in actor [:models :model]))]
+                 (get-in actor [:models :model]))
+        position (if (nil? position) :center position)]
     (swap! db update :actors assoc
-           (:_id actor) (merge actor {:model model*
+           (:_id actor) (merge actor {:model model
                                       :position position}))))
 
 (defmethod perform* :move

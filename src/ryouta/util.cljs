@@ -12,9 +12,9 @@
   "Calculates the vw amount for either left or right for an actor's positioning"
   [pos]
   (case pos
-      :left {:left 0}
-      :center {}
-      :right {:right 0}))
+    :left -50
+    :center 0
+    :right 50))
 
 (defn log! [& data] 
   (apply js/console.log (clj->js data)))

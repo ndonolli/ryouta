@@ -19,6 +19,9 @@
                    [:says nathan "This is more like it!"]
                    [:group [[:enter makki {:position :right}]
                             [:move nathan :left]]]
+                   [:says makki "CHAAANGE PLACEESS"]
+                   [:group [[:move nathan :right]
+                            [:move makki :left]]]
                    [:says nathan "Who is that babe?"]
                    [:says makki "omg wtf creep"]
                    [:says nathan "Wait...I"]
@@ -33,10 +36,14 @@
                    [:cond
                     :option1 [:says makki "you have chosen option1"]
                     :option2 [[:says makki "you have chosen option2"]
-                              [:says makki "here is an extra thing"]]]])
+                              [:says makki "here is an anonymous poll"]
+                              [:choose ["the first thing" "the second thing"]]
+                              [:cond
+                               :%1 [:says makki "numbuh 1"]
+                               :%2 [:says makki "numbuh 2"]]]]])
 
 (def script_town [[:scene town]
-                  [:group [[:enter nathan {:position :center}]
+                  [:group [[:enter nathan]
                            [:says nathan "Hi it's me nathan"]]]
                   [:says nathan "I'm just here chillin in this town"]
                   [:says nathan "...but it would be nice to go to the beach!"]

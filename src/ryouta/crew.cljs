@@ -51,15 +51,14 @@
 (defn actors []
   [css-transition-group
    {:transition-name "ry-actor"
-    :transition-enter-timeout 500
-    :transition-leave-timeout 500
+    :transition-enter-timeout (:transition-ms @state/game-settings)
+    :transition-leave-timeout (:transition-ms @state/game-settings)
     :class "ry-actors"}
    (for [[_id actor] @state/actors]
-     ^{:key _id}
      (let [pos (util/calc-position (:position actor))]
+       ^{:key _id}
        [:img.ry-actor {:src (:model actor)
-                       :style {:left (when (:left pos) (str (:left pos) "vw"))
-                               :right (when (:right pos) (str (:right pos) "vw"))}}]))])
+                       :style {:transform (str "translateX(" pos "%)")}}]))])
 
 (defn fade-overlay []
   [:span.ry-fade-overlay {:style {:opacity (if @state/overlay? 1 0)

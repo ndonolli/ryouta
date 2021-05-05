@@ -4,6 +4,7 @@
             [cljs.reader :as reader]))
 
 (defonce default {:vars {}
+                  :game-settings {:transition-ms 500}
                   :dialogue {:visible? false
                              :typing? false
                              :progressible? true ;; can the game be progressed by a click anywhere on the screen?
@@ -36,6 +37,7 @@
 (def vars (r/cursor db [:vars]))
 (def overlay? (r/cursor db [:overlay?]))
 (def progressible? (r/cursor db [:dialogue :progressible?]))
+(def game-settings (r/cursor db [:game-settings]))
 
 (add-watch db :log
            (fn [key this old-state new-state]
