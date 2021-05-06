@@ -4,6 +4,8 @@
             [cljs.reader :as reader]))
 
 (defonce default {:vars {}
+                  :screen {:visible? false
+                           :component nil}
                   :game-settings {:transition-ms 500}
                   :dialogue {:visible? false
                              :typing? false
@@ -38,7 +40,8 @@
 (def overlay? (r/cursor db [:overlay?]))
 (def progressible? (r/cursor db [:dialogue :progressible?]))
 (def game-settings (r/cursor db [:game-settings]))
+(def screen (r/cursor db [:screen]))
 
 (add-watch db :log
            (fn [key this old-state new-state]
-             (comment log! @this)))
+             (tap> @this)))

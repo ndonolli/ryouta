@@ -8,12 +8,15 @@
 (def css-transition-group
   (r/adapt-react-class rtg/CSSTransitionGroup))
 
-(defn global-click-handler []
+(defn global-click-handler [e]
   (cond
-    (> (count (:choices @state/dialogue)) 0)
+    (or
+     (.contains (-> e .-target .-classList) "ry-clickable")
+     (> (count (:choices @state/dialogue)) 0)
+     (:visible? @state/screen))
     nil
 
-    (:typing? @state/dialogue) 
+    (:typing? @state/dialogue)
     (direct/perform! [:dialogue-line-complete])
 
     (:progressible? @state/dialogue)
@@ -65,10 +68,16 @@
   [:span.ry-fade-overlay {:style {:opacity (if @state/overlay? 1 0)
                                   :z-index (if (or @state/overlay? @state/progressible?) 9999 1)}}])
 
+(defn custom-screen []
+  (when (:visible? @state/screen)
+    [:span.ry-screen 
+     [(:component @state/screen)]]))
+
 (defn game []
   [:div.ry-game {:on-click global-click-handler}
    
    [fade-overlay]
+   [custom-screen]
    [:div.ry-background {:style
                         {:background (str "url(\"" (:background @state/scene) "\") no-repeat center center fixed")}}
     [dialogue]

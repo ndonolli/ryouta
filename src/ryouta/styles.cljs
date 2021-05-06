@@ -104,7 +104,13 @@
        'border-radius (em 1)
        'font-size (em 1.5)}
       [:&:hover
-       {'background (rgba 0 50 50 0.6)}]]]))
+       {'background (rgba 0 50 50 0.6)}]]
+     
+     [:.ry-screen
+      {'height 'inherit
+       'width 'inherit
+       'position 'absolute
+       'z-index 10000}]]))
 
 ;; storing the style-ref is only to support hot-reloading with styles
 (defonce style-ref (atom nil))

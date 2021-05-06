@@ -88,32 +88,55 @@
                                 (assoc-in [:dialogue :progressible?] true)
                                 (assoc-in [:dialogue :visible?] false))))))))
 
+(defmethod perform* :screen
+  [[_ component opts]]
+  (let [default-opts {:transition? true}
+        {:keys [transition?]} (merge default-opts opts)
+        delay-ms (:transition-ms @state/game-settings)]
+    
+    (if-not transition?
+      (swap! state/screen assoc :visible? true :component component)
+      (timeout->
+       0
+        #(swap! db (fn [db*] (-> db*
+                                 (assoc :overlay? true)
+                                 (assoc-in [:dialogue :progressible?] false)
+                                 (assoc-in [:screen :visible?] false))))
+       
+       delay-ms
+       #(swap! db (fn [db*] (-> db*
+                                (assoc-in [:screen :component] component)
+                                (assoc-in [:screen :visible?] true)
+                                (assoc :overlay? false)
+                                (assoc-in [:dialogue :progressible?] true)
+                                (assoc-in [:dialogue :visible?] false))))))))
+
 (defmethod perform* :enter
   [[_ actor {:keys [position model] :as opts}]]
   (let [model (if (nil? model)
                  (-> (:models actor) first second) ;; get first item in models as default
                  (get-in actor [:models :model]))
         position (if (nil? position) :center position)]
-    (swap! db update :actors assoc
+    (swap! state/actors assoc
            (:_id actor) (merge actor {:model model
                                       :position position}))))
 
 (defmethod perform* :move
   [[_ {:keys [_id]} position]]
-  (swap! db assoc-in [:actors _id :position] position))
+  (swap! state/actors assoc-in [_id :position] position))
 
 (defmethod perform* :exit
   [[_ actor]]
-  (swap! db update :actors dissoc (:_id actor)))
+  (swap! state/actors dissoc (:_id actor)))
 
 (defmethod perform* :says
   [[_ actor dialogue]]
-  (swap! db assoc
-         :dialogue {:line dialogue
-                    :actor (:name actor)
-                    :visible? true
-                    :typing? true
-                    :progressible? false}))
+  (swap! state/dialogue assoc
+         :line dialogue
+         :actor (:name actor)
+         :visible? true
+         :typing? true
+         :progressible? false))
 
 (defmethod perform* :group
   [[_ directions]]
@@ -134,7 +157,7 @@
           (map (fn [[label option]] {:label label :option option})
                options))]
 
-    (swap! db update :dialogue assoc :choices choices :progressible? false)))
+    (swap! state/dialogue assoc :choices choices :progressible? false)))
 
 (defmethod perform* :if
   [[_ pred if-cond else-cond :as direction]]
@@ -161,7 +184,7 @@
 ;; Event dispatchers used more internally, although accessible to the user if needed
 (defmethod perform* :dialogue-line-complete
   []
-  (swap! db update :dialogue assoc :typing? false :progressible? true))
+  (swap! state/dialogue assoc :typing? false :progressible? true))
 
 (defmethod perform* :choice-selected
   [[_ label]]
@@ -172,6 +195,7 @@
 
 ;; Main read definition
 (defn read! [directions]
+  (swap! state/screen assoc :visible? false)
   (let [direction (first directions)]
     (when-not (nil? direction)
       (if (vector? (first direction))

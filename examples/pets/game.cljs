@@ -1,5 +1,6 @@
 (ns pets.game
   (:require [ryouta.core :as ryouta]
+            [ryouta.director :as direct]
             [ryouta.state :as state]))
 
 ;; Define your characters
@@ -14,6 +15,7 @@
 ;; Define your scenes
 (def town {:name "town" :background "/images/scenes/town.jpeg"})
 (def beach {:name "beach" :background "/images/scenes/beach.jpg"})
+
 
 (def script_beach [[:scene beach]
                    [:says nathan "This is more like it!"]
@@ -52,17 +54,16 @@
                    :beach [script_beach]
                    :nah [:says nathan "nevermind"]]])
 
-(def nest_test [[:scene town]
-                [:enter nathan {:position :center}]
-                [:choose [[:option1 "Option 1"]
-                          [:option2 "Option 2"]]]
-                [:cond 
-                 :option1 [:says nathan "option1"]
-                 :option2 [[:says nathan "option2"]
-                           [:says nathan "another 1"]]]
-                [:says nathan "not gonna happen"]])
+
+(defn menu []
+  [:div
+   [:h1 "Welcome to the game"]
+   [:button.ry-clickable {:on-click #(direct/read! script_town)} "start"]])
+
 ;; Define your script
-(def myscript script_town)
+(def myscript [[:screen menu]])
+
+
 
 ;; This is your main function to initialize the game
 (defn ^:export main []
