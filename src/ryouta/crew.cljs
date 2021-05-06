@@ -22,6 +22,7 @@
 (defn typewriter [text delay]
   (let [typed (r/atom "")
         prev-text (r/atom "")]
+    ;; cannot use recur here because the binding is lost in the setTimeout callback
     (letfn [(type* [chars]
               (swap! typed str (first chars))
               (let [next (seq (rest chars))]
@@ -73,3 +74,5 @@
     [dialogue]
     [choices]
     [actors]]])
+
+(comment (macroexpand '(util/timeout-> (+ 1 2) (+ 5 3))))

@@ -3,7 +3,7 @@
   (:require [malli.core :as m]
             [malli.error :as me]
             [ryouta.state :refer [db vars] :as state]
-            [ryouta.util :refer [log! in?]]
+            [ryouta.util :refer [log! in? timeout->]]
             [sci.core]))
 
 (declare VALID-ACTIONS)
@@ -56,32 +56,37 @@
 (defn set-next-directions [directions]
   (swap! db assoc :directions directions))
 
-;; "peform" is a special dispatch method used by "read!" below.
-;; It is used to parse a direction and handle the business logic for updating the game state.
-;; Each direction has a struct of [action & arguments]
-;; The arguments can range from simple parameters to other nested directions as used in the
-;; special aciton forms like :cond and :if
+;;----------
+;; Perform
+;;----------
 (defmulti perform* first)
-(defn perform! [direction]
-  (perform* direction))
+(defn perform!
+  "This function is used to parse a direction and handle the business logic for updating the game state.
+   Each direction is a record of [action & arguments?].  In most cases, directions defined in a script
+   will be executed by `read!`, which calls this method. However, `perform!` can be used independently 
+   to dispatch game events."
+  [direction] (perform* direction))
 
+;; User-centric action dispatches for directions used in scripts and game events
 (defmethod perform* :scene
   [[_ scene opts]]
   (let [default-opts {:transition? true}
-        {:keys [transition?]} (merge default-opts opts)]
+        {:keys [transition?]} (merge default-opts opts)
+        delay-ms (:transition-ms @state/game-settings)]
+         
     (if-not transition?
       (swap! db assoc :scene scene)
-      (do
-        (swap! db (fn [db*] (-> db*
+      (timeout->
+       0 
+       #(swap! db (fn [db*] (-> db*
                                 (assoc :overlay? true)
                                 (assoc-in [:dialogue :progressible?] false))))
-        (js/setTimeout
-         #(swap! db (fn [db*] (-> db*
-                                  (assoc :scene scene)
-                                  (assoc :overlay? false)
-                                  (assoc-in [:dialogue :progressible?] true)
-                                  (assoc-in [:dialogue :visible?] false)))) 
-         (:transition-ms @state/game-settings))))))
+       delay-ms 
+       #(swap! db (fn [db*] (-> db*
+                                (assoc :scene scene)
+                                (assoc :overlay? false)
+                                (assoc-in [:dialogue :progressible?] true)
+                                (assoc-in [:dialogue :visible?] false))))))))
 
 (defmethod perform* :enter
   [[_ actor {:keys [position model] :as opts}]]
@@ -153,6 +158,7 @@
         (when (next clauses*)
           (recur (next clauses*)))))))
 
+;; Event dispatchers used more internally, although accessible to the user if needed
 (defmethod perform* :dialogue-line-complete
   []
   (swap! db update :dialogue assoc :typing? false :progressible? true))
@@ -164,6 +170,7 @@
                   (assoc-in [:vars label] true)
                   (update :dialogue assoc :choices nil :progressible? true)))))
 
+;; Main read definition
 (defn read! [directions]
   (let [direction (first directions)]
     (when-not (nil? direction)

@@ -9,17 +9,34 @@
       (keyword)))
 
 (defn calc-position
-  "Calculates the vw amount for either left or right for an actor's positioning"
+  "Calculates the translateX percent amount for an actor's positioning"
   [pos]
   (case pos
     :left -50
     :center 0
     :right 50))
 
-(defn log! [& data] 
+(defn log! 
+  "Converts and prints data to the javascript console"
+  [& data] 
   (apply js/console.log (clj->js data)))
 
 (defn in?
-  "true if coll contains elm"
+  "Returns true if coll contains elm"
   [coll elm]
   (some #(= elm %) coll))
+
+(defn timeout->
+  "Given sequential args delay (in ms) followed by a callback function, calls setTimeout for each.
+   
+   Example:
+   ```clojure
+   (timeout-> 
+    0 #(println \"Runs Immediately\")
+    500 #(println \"Runs after 500 ms\"))
+   ```
+   "
+  [& forms]
+  (doall (->> forms
+              (partition 2)
+              (map (fn [[ms cb]] (js/setTimeout cb ms))))))
