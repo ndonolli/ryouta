@@ -56,23 +56,29 @@
                    :beach [script_beach]
                    :nah [:says nathan "nevermind"]]])
 
-(defn loading-screen []
-  (when (and (:loaded? @state/assets) (not @state/overlay-transitioning?))
-    (direct/perform [:next-direction]))
-  [:div.center-logo-container
-   [:div.loading-bar
-    [:div.loading-bar-progress {:style {:width (str (:percent-loaded @state/assets) "%")}}]]])
+(def loading-screen
+  (ryouta/create-screen
+   (fn []
+     (when (and (:loaded? @state/assets) (not @state/overlay-transitioning?))
+       (direct/perform [:next-direction]))
+     [:div.center-logo-container
+      [:div.loading-bar
+       [:div.loading-bar-progress {:style {:width (str (:percent-loaded @state/assets) "%")}}]]])))
 
-(defn imaginathan-splash []
-  (direct/perform [:next-direction-delay 5000])
-  [:div.center-logo-container
-   [:div.text-align-center
-    [:img.logo {:src "/images/imaginathan-games-logo.png"}]]])
+(def imaginathan-splash
+  (ryouta/create-screen
+   (fn []
+     (direct/perform [:next-direction-delay 5000])
+     [:div.center-logo-container
+      [:div.text-align-center
+       [:img.logo {:src "/images/imaginathan-games-logo.png"}]]])))
 
-(defn menu []
-  [:div
-   [:h1 "Welcome to the game"]
-   [:button.ry-clickable {:on-click #(direct/read script_town)} "start"]])
+(def menu
+  (ryouta/create-screen
+   (fn []
+     [:div
+      [:h1 "Welcome to the game"]
+      [:button.ry-clickable {:on-click #(direct/read script_town)} "start"]])))
 
 ;; Define your script
 (def myscript [[:screen loading-screen {:transition? false}]
@@ -95,8 +101,7 @@
                            "https://i.imgur.com/uUL3zYD.jpg"
                            "https://miro.medium.com/max/2048/1*9uNBXXGjYqJ7NzyJaoCBnQ.jpeg"
                            "https://design-milk.com/images/2020/01/DM-Wallpaper-2001-5120x2880-featureda-scaled.jpg"
-                           "https://wallpaperaccess.com/full/7314.jpg"
-                           "/images/imaginathan-games-logo.png"])
+                           "https://wallpaperaccess.com/full/7314.jpg"])
 
   ;; Mount the game to an element
   (ryouta/stage "game")

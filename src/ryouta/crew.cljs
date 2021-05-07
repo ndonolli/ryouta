@@ -74,10 +74,9 @@
 
 (defn game []
   [:div.ry-game {:on-click global-click-handler}
-   
    [fade-overlay]
    (when (:visible? @state/screen)
-     [custom-screen (:component @state/screen)])
+     [custom-screen @state/active-component])
    [:div.ry-background {:style
                         {:background (str "url(\"" (:background @state/scene) "\") no-repeat center center fixed")}}
     [dialogue]

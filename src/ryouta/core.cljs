@@ -6,22 +6,34 @@
             [ryouta.util :as util]
             [clojure.set :refer [union]]))
 
+(defn register-assets [paths]
+  (swap! state/assets update :paths union (set paths)))
 
-(defn create-actor 
+(defn create-actor
   "Create an actor record and register with the engine"
   [actor]
   (let [id (util/generate-id)]
-    (swap! state/assets update-in [:paths] conj (get-in actor [:models :default]))
+    (register-assets (vals (:models actor)))
     (assoc actor :_id id)))
 
 (defn create-scene
   [scene]
   (let [id (util/generate-id)]
-    (swap! state/assets update :paths conj (get-in scene [:background]))
+    (register-assets #{(:background scene)})
     (assoc scene :_id id)))
 
-(defn register-assets [paths]
-  (swap! state/assets update :paths union (set paths)))
+(defn create-screen
+  [screen]
+  (let [id (util/generate-id)
+        assets (->> (screen)
+                    (flatten)
+                    (filter map?)
+                    (map :src)
+                    (remove nil?))]
+    (register-assets assets)
+    (util/log! @state/components)
+    (swap! state/components assoc id screen)
+    (assoc {} :_id id)))
 
 (defn ^:export prepare
   "Loads the game db with any options"

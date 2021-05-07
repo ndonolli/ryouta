@@ -63,7 +63,7 @@
 (defn perform
   "This function is used to parse a direction and handle the business logic for updating the game state.
    Each direction is a record of [action & arguments?].  In most cases, directions defined in a script
-   will be executed by `read`, which calls this method. However, `perform` can be used independently 
+   will be executed by `read`, which calls this method. However, `perform` can be used independently
    to dispatch game events."
   [direction] (perform* direction))
 
@@ -73,22 +73,22 @@
   (let [default-opts {:transition? true}
         {:keys [transition?]} (merge default-opts opts)
         delay-ms (:transition-ms @state/game-settings)]
-         
+
     (if-not transition?
       (swap! db assoc :scene scene)
       (timeout->
-       0 
+       0
        #(swap! db (fn [db*] (-> db*
                                 (assoc :overlay? true)
                                 (assoc :overlay-transitioning? true)
                                 (assoc-in [:dialogue :progressible?] false))))
-       delay-ms 
+       delay-ms
        #(swap! db (fn [db*] (-> db*
                                 (assoc :scene scene)
                                 (assoc :overlay? false)
                                 (assoc-in [:screen :visible?] false)
                                 (assoc-in [:dialogue :visible?] false))))
-       
+
        (* 2 delay-ms)
        #(swap! db (fn [db*] (-> db*
                                 (assoc :overlay-transitioning? false)
@@ -98,10 +98,11 @@
   [[_ component opts]]
   (let [default-opts {:transition? true}
         {:keys [transition?]} (merge default-opts opts)
-        delay-ms (:transition-ms @state/game-settings)]
-    
+        delay-ms (:transition-ms @state/game-settings)
+        component-id (:_id component)]
+
     (if-not transition?
-      (swap! state/screen assoc :visible? true :component component)
+      (swap! state/screen assoc :visible? true :component component-id)
       (timeout->
        0
         #(swap! db (fn [db*] (-> db*
@@ -109,14 +110,14 @@
                                  (assoc :overlay-transitioning? true)
                                  (assoc-in [:dialogue :progressible?] false)
                                  (assoc-in [:screen :visible?] true))))
-       
+
        delay-ms
        #(swap! db (fn [db*] (-> db*
-                                (assoc-in [:screen :component] component)
+                                (assoc-in [:screen :component] component-id)
                                 (assoc :overlay? false)
                                 (assoc-in [:screen :visible?] true)
                                 (assoc-in [:dialogue :visible?] false))))
-       
+
        (* 2 delay-ms)
        #(swap! db (fn [db*] (-> db*
                                 (assoc :overlay-transitioning? false)
@@ -174,12 +175,12 @@
   [[_ pred if-cond else-cond :as direction]]
   (when (or (nil? pred) (nil? if-cond))
     (throw (js/Error. (str "Error reading direction :if - a predicate and if-condition are required - " direction))))
-  (let [directions (if (get @vars pred) 
-                     (vector if-cond) 
+  (let [directions (if (get @vars pred)
+                     (vector if-cond)
                      (if (nil? else-cond) nil (vector else-cond)))
         state-directions (:directions @db)]
     (read (concat (vector directions) state-directions))))
-    
+
 
 (defmethod perform* :cond
   [[_ & clauses]]
@@ -199,7 +200,7 @@
 
 (defmethod perform* :choice-selected
   [[_ label]]
-  (swap! db (fn [old-db] 
+  (swap! db (fn [old-db]
               (-> old-db
                   (assoc-in [:vars label] true)
                   (update :dialogue assoc :choices nil :progressible? true)))))
@@ -210,7 +211,8 @@
 
 (defmethod perform* :next-direction-delay
   [[_ ms]]
-  (timeout-> (or ms (:transition-ms @state/game-settings)) #(read @state/directions)))
+  (when @state/directions
+    (timeout-> (or ms (:transition-ms @state/game-settings)) #(read @state/directions))))
 
 ;; Main read definition
 (defn read [directions]
@@ -224,7 +226,7 @@
         (read direction)
         (if (valid-direction? direction)
           (do (perform* direction)
-              
+
               ;; special forms like :cond, :if, etc. are unique cases that handle this functionality explicitly
               (when-not (in? SPECIAL-FORMS (first direction))
                 (store-history direction)
