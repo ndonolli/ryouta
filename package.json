@@ -9,5 +9,8 @@
     "react": "^17.0.1",
     "react-dom": "17.0.1",
     "react-transition-group": "^1.2.1"
+  },
+  "scripts": {
+    "release": "npm install && npx shadow-cljs compile pet-game"
   }
 }
