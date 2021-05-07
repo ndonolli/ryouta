@@ -55,6 +55,18 @@
                    :beach [script_beach]
                    :nah [:says nathan "nevermind"]]])
 
+(defn loading-screen []
+  (when (:loaded? @state/assets)
+    (direct/perform! [:next-direction]))
+  [:div
+   [:p "Loading "]
+   [:div {:style {:height "20px"
+                  :width "300px"
+                  :border "1px solid black"}}
+    [:div {:style {:background-color "red"
+                   :height "inherit"
+                   :transition "Width 0.2s ease-in-out"
+                   :width (str (:percent-loaded @state/assets) "%")}}]]])
 
 (defn menu []
   [:div
@@ -62,17 +74,30 @@
    [:button.ry-clickable {:on-click #(direct/read! script_town)} "start"]])
 
 ;; Define your script
-(def myscript [[:screen menu]])
+(def myscript [[:screen loading-screen {:transition? false}]
+               [:screen menu]])
 
 
 
 ;; This is your main function to initialize the game
 (defn ^:export main []
   ;; Set up the directions, options, and any other game state
-  (ryouta/prepare {:directions myscript})
+  (ryouta/prepare {:directions myscript
+                   :game-settings {:transition-ms 1000}})
+  (ryouta/register-assets ["https://c8.alamy.com/comp/F1WJN3/full-moon-harvest-moon-large-file-size-from-the-archives-of-press-F1WJN3.jpg"
+                           "https://captbbrucato.files.wordpress.com/2011/08/dscf0585_stitch-besonhurst-2.jpg"
+                           "https://i3g4v6w8.stackpathcdn.com/wp-content/uploads/2019/09/delete-large-folder-fast-windows10_.jpg"
+                           "https://miro.medium.com/max/4800/1*lOXDHhxbqfy0unDn9x56HQ.jpeg"
+                           "https://cdn.osxdaily.com/wp-content/uploads/2012/04/find-large-files-mac-os-x.jpg"
+                           "https://io.dropinblog.com/uploaded/blogs/34237324/files/featured/marc-olivier-jodoin-NqOInJ-ttqM-unsplash.jpg"
+                           "https://i.imgur.com/uUL3zYD.jpg"
+                           "https://miro.medium.com/max/2048/1*9uNBXXGjYqJ7NzyJaoCBnQ.jpeg"
+                           "https://design-milk.com/images/2020/01/DM-Wallpaper-2001-5120x2880-featureda-scaled.jpg"
+                           "https://wallpaperaccess.com/full/7314.jpg"])
 
   ;; Mount the game to an element
-  (ryouta/stage "game"))
+  (ryouta/stage "game")
+  (direct/read! @state/directions))
 
 ;; While developing, it might be useful to set up hot-reloading hooks with figwheel or shadow-cljs
 (defn ^:dev/after-load start []
@@ -87,19 +112,3 @@
 
 (defn ^:export load []
   (state/load-game! "save"))
-
-
-;; scene to reference features, ignore
-(def scene [[:enter nathan]
-            [:says nathan "ayy lmao" :happy]
-            [:exit nathan]
-            [:choose [[:option1 "Option 1"] [:option2 "Option 2"]]]
-            [:case
-             :option1 [[:foo :bar]
-                       [:foo :bar]]
-             :option2 [:foo :bar]]
-            [:choose ["Option 1" "Option 2"]]
-            [:case
-             :%1 [:hello]
-             :%2 [[:hello nathan]
-                  [:there nathan]]]])

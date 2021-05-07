@@ -193,6 +193,10 @@
                   (assoc-in [:vars label] true)
                   (update :dialogue assoc :choices nil :progressible? true)))))
 
+(defmethod perform* :next-direction
+  []
+  (read! @state/directions))
+
 ;; Main read definition
 (defn read! [directions]
   (swap! state/screen assoc :visible? false)

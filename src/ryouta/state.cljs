@@ -21,19 +21,29 @@
 
 (def db (r/atom {}))
 
+(def assets (r/atom {:loaded? false
+                     :load-count 0
+                     :percent-loaded 0
+                     :paths #{}}))
+
+(defn on-asset-load []
+  (swap! assets (fn [assets*]
+                  (let [percent-loaded (* 100 (/ (inc (:load-count assets*)) (count (:paths assets*))))]
+                    (cond-> assets*
+                      true (update :load-count inc)
+                      true (assoc :percent-loaded percent-loaded)
+                      (>= percent-loaded 100) (assoc :loaded? true)))))
+  (log! @assets))
+
 (defn preload [url]
   (let [img (js/Image.)]
-    (log! img)
+    (set! (.-onload img) on-asset-load)
     (set! (.-src img) url)
     (.append (.getElementById js/document "ry-assets") img)))
 
-(def assets (r/atom {:loaded? false
-                     :paths []}))
-
 (defn preload-assets []
   (doseq [path (:paths @assets)]
-    (preload path))
-  (swap! assets assoc :loaded? true))
+    (preload path)))
 
 (defn create-db! [opts]
   (reset! db (merge default opts)))

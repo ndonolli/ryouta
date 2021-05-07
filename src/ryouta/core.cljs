@@ -3,7 +3,8 @@
             [ryouta.crew :as crew]
             [ryouta.state :as state]
             [ryouta.styles :as styles]
-            [ryouta.util :as util]))
+            [ryouta.util :as util]
+            [clojure.set :refer [union]]))
 
 
 (defn create-actor 
@@ -16,8 +17,11 @@
 (defn create-scene
   [scene]
   (let [id (util/generate-id)]
-    (swap! state/assets update-in [:paths] conj (get-in scene [:background]))
+    (swap! state/assets update :paths conj (get-in scene [:background]))
     (assoc scene :_id id)))
+
+(defn register-assets [paths]
+  (swap! state/assets update :paths union (set paths)))
 
 (defn ^:export prepare
   "Loads the game db with any options"
