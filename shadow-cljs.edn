@@ -14,6 +14,7 @@
                      :output-dir "examples/pets/public/js"
                      :asset-path "/js"
                      :js-options {:js-provider :shadow}
+                     :compiler-options {:optimizations :whitespace}
                      :modules {:main {:entries [pets.game]}}
                      :devtools {:http-root "examples/pets/public"
                                 :repl-init-ns pets.game
