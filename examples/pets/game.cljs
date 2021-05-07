@@ -1,7 +1,8 @@
 (ns pets.game
   (:require [ryouta.core :as ryouta]
             [ryouta.director :as direct]
-            [ryouta.state :as state]))
+            [ryouta.state :as state]
+            [ryouta.util :refer [log!]]))
 
 ;; Define your characters
 (def nathan (ryouta/create-actor
@@ -56,25 +57,26 @@
                    :nah [:says nathan "nevermind"]]])
 
 (defn loading-screen []
-  (when (:loaded? @state/assets)
-    (direct/perform! [:next-direction]))
-  [:div
-   [:p "Loading "]
-   [:div {:style {:height "20px"
-                  :width "300px"
-                  :border "1px solid black"}}
-    [:div {:style {:background-color "red"
-                   :height "inherit"
-                   :transition "Width 0.2s ease-in-out"
-                   :width (str (:percent-loaded @state/assets) "%")}}]]])
+  (when (and (:loaded? @state/assets) (not @state/overlay-transitioning?))
+    (direct/perform [:next-direction]))
+  [:div.center-logo-container
+   [:div.loading-bar
+    [:div.loading-bar-progress {:style {:width (str (:percent-loaded @state/assets) "%")}}]]])
+
+(defn imaginathan-splash []
+  (direct/perform [:next-direction-delay 5000])
+  [:div.center-logo-container
+   [:div.text-align-center
+    [:img.logo {:src "/images/imaginathan-games-logo.png"}]]])
 
 (defn menu []
   [:div
    [:h1 "Welcome to the game"]
-   [:button.ry-clickable {:on-click #(direct/read! script_town)} "start"]])
+   [:button.ry-clickable {:on-click #(direct/read script_town)} "start"]])
 
 ;; Define your script
 (def myscript [[:screen loading-screen {:transition? false}]
+               [:screen imaginathan-splash]
                [:screen menu]])
 
 
@@ -93,11 +95,12 @@
                            "https://i.imgur.com/uUL3zYD.jpg"
                            "https://miro.medium.com/max/2048/1*9uNBXXGjYqJ7NzyJaoCBnQ.jpeg"
                            "https://design-milk.com/images/2020/01/DM-Wallpaper-2001-5120x2880-featureda-scaled.jpg"
-                           "https://wallpaperaccess.com/full/7314.jpg"])
+                           "https://wallpaperaccess.com/full/7314.jpg"
+                           "/images/imaginathan-games-logo.png"])
 
   ;; Mount the game to an element
   (ryouta/stage "game")
-  (direct/read! @state/directions))
+  (direct/read @state/directions))
 
 ;; While developing, it might be useful to set up hot-reloading hooks with figwheel or shadow-cljs
 (defn ^:dev/after-load start []

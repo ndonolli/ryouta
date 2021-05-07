@@ -17,10 +17,10 @@
     nil
 
     (:typing? @state/dialogue)
-    (direct/perform! [:dialogue-line-complete])
+    (direct/perform [:dialogue-line-complete])
 
     (:progressible? @state/dialogue)
-    (direct/read! @state/directions)))
+    (direct/read @state/directions)))
 
 (defn typewriter [text delay]
   (let [typed (r/atom "")
@@ -31,7 +31,7 @@
               (let [next (seq (rest chars))]
                 (if (and next (:typing? @state/dialogue))
                   (js/setTimeout #(type* (seq (rest chars))) delay)
-                  (direct/perform! [:dialogue-line-complete]))))]
+                  (direct/perform [:dialogue-line-complete]))))]
       (fn [text delay]
         (when-not (= text @prev-text)
           (reset! prev-text text)
@@ -50,7 +50,7 @@
     [:div.ry-choices
      (for [{:keys [label option]} options]
        ^{:key label}
-       [:div.ry-choice {:on-click #(direct/perform! [:choice-selected label])} option])]))
+       [:div.ry-choice {:on-click #(direct/perform [:choice-selected label])} option])]))
 
 (defn actors []
   [css-transition-group
@@ -66,23 +66,21 @@
 
 (defn fade-overlay []
   [:span.ry-fade-overlay {:style {:opacity (if @state/overlay? 1 0)
-                                  :z-index (if (or @state/overlay? @state/progressible?) 9999 1)}}])
+                                  :z-index (if @state/overlay-transitioning? 10000 1)}}])
 
-(defn custom-screen []
-  (when (:visible? @state/screen)
-    [:span.ry-screen 
-     [(:component @state/screen)]]))
+(defn custom-screen [screen-component]
+  [:span.ry-screen
+   [screen-component]])
 
 (defn game []
   [:div.ry-game {:on-click global-click-handler}
    
    [fade-overlay]
-   [custom-screen]
+   (when (:visible? @state/screen)
+     [custom-screen (:component @state/screen)])
    [:div.ry-background {:style
                         {:background (str "url(\"" (:background @state/scene) "\") no-repeat center center fixed")}}
     [dialogue]
     [choices]
     [actors]]
    [:div#ry-assets {:style {:display "none"}}]])
-
-(comment (macroexpand '(util/timeout-> (+ 1 2) (+ 5 3))))

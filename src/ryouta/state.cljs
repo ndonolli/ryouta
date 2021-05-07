@@ -17,7 +17,8 @@
                   :directions []
                   :history []
                   :scene {}
-                  :overlay? false})
+                  :overlay? false
+                  :overlay-transitioning? false})
 
 (def db (r/atom {}))
 
@@ -32,8 +33,7 @@
                     (cond-> assets*
                       true (update :load-count inc)
                       true (assoc :percent-loaded percent-loaded)
-                      (>= percent-loaded 100) (assoc :loaded? true)))))
-  (log! @assets))
+                      (>= percent-loaded 100) (assoc :loaded? true))))))
 
 (defn preload [url]
   (let [img (js/Image.)]
@@ -62,6 +62,7 @@
 (def actors (r/cursor db [:actors]))
 (def vars (r/cursor db [:vars]))
 (def overlay? (r/cursor db [:overlay?]))
+(def overlay-transitioning? (r/cursor db [:overlay-transitioning?]))
 (def progressible? (r/cursor db [:dialogue :progressible?]))
 (def game-settings (r/cursor db [:game-settings]))
 (def screen (r/cursor db [:screen]))

@@ -1,5 +1,37 @@
 .container {
   width: 100vw;
   height: 100vh;
-  border: 1px solid black;
+}
+
+body {
+  margin: 0
+}
+
+.center-logo-container {
+  display: flex;
+  background-color: black;
+  height: inherit;
+  justify-content: space-around;
+  flex-direction: column;
+}
+
+.text-align-center {
+  text-align: center;
+}
+
+.logo {
+  width: 75%
+}
+
+.loading-bar {
+  height: 20px;
+  align-self: center;
+  width: 50%;
+  border: 1px solid white;
+}
+
+.loading-bar-progress {
+  background-color: white;
+  height: inherit;
+  transition: width 0.2s ease-in-out;
 }

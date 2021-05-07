@@ -7,7 +7,7 @@
             [sci.core]))
 
 (declare VALID-ACTIONS)
-(declare read!)
+(declare read)
 
 (defonce SPECIAL-FORMS [:cond :if])
 
@@ -60,10 +60,10 @@
 ;; Perform
 ;;----------
 (defmulti perform* first)
-(defn perform!
+(defn perform
   "This function is used to parse a direction and handle the business logic for updating the game state.
    Each direction is a record of [action & arguments?].  In most cases, directions defined in a script
-   will be executed by `read!`, which calls this method. However, `perform!` can be used independently 
+   will be executed by `read`, which calls this method. However, `perform` can be used independently 
    to dispatch game events."
   [direction] (perform* direction))
 
@@ -80,13 +80,19 @@
        0 
        #(swap! db (fn [db*] (-> db*
                                 (assoc :overlay? true)
+                                (assoc :overlay-transitioning? true)
                                 (assoc-in [:dialogue :progressible?] false))))
        delay-ms 
        #(swap! db (fn [db*] (-> db*
                                 (assoc :scene scene)
                                 (assoc :overlay? false)
-                                (assoc-in [:dialogue :progressible?] true)
-                                (assoc-in [:dialogue :visible?] false))))))))
+                                (assoc-in [:screen :visible?] false)
+                                (assoc-in [:dialogue :visible?] false))))
+       
+       (* 2 delay-ms)
+       #(swap! db (fn [db*] (-> db*
+                                (assoc :overlay-transitioning? false)
+                                (assoc-in [:dialogue :progressible?] true))))))))
 
 (defmethod perform* :screen
   [[_ component opts]]
@@ -100,16 +106,21 @@
        0
         #(swap! db (fn [db*] (-> db*
                                  (assoc :overlay? true)
+                                 (assoc :overlay-transitioning? true)
                                  (assoc-in [:dialogue :progressible?] false)
-                                 (assoc-in [:screen :visible?] false))))
+                                 (assoc-in [:screen :visible?] true))))
        
        delay-ms
        #(swap! db (fn [db*] (-> db*
                                 (assoc-in [:screen :component] component)
-                                (assoc-in [:screen :visible?] true)
                                 (assoc :overlay? false)
-                                (assoc-in [:dialogue :progressible?] true)
-                                (assoc-in [:dialogue :visible?] false))))))))
+                                (assoc-in [:screen :visible?] true)
+                                (assoc-in [:dialogue :visible?] false))))
+       
+       (* 2 delay-ms)
+       #(swap! db (fn [db*] (-> db*
+                                (assoc :overlay-transitioning? false)
+                                (assoc-in [:dialogue :progressible?] true))))))))
 
 (defmethod perform* :enter
   [[_ actor {:keys [position model] :as opts}]]
@@ -167,7 +178,7 @@
                      (vector if-cond) 
                      (if (nil? else-cond) nil (vector else-cond)))
         state-directions (:directions @db)]
-    (read! (concat (vector directions) state-directions))))
+    (read (concat (vector directions) state-directions))))
     
 
 (defmethod perform* :cond
@@ -177,7 +188,7 @@
   (loop [clauses* (partition 2 clauses)]
     (let [[var* directions] (first clauses*)]
       (if (get @vars var*)
-        (read! (concat (vector directions) (rest (:directions @db))))
+        (read (concat (vector directions) (rest (:directions @db))))
         (when (next clauses*)
           (recur (next clauses*)))))))
 
@@ -195,18 +206,22 @@
 
 (defmethod perform* :next-direction
   []
-  (read! @state/directions))
+  (read @state/directions))
+
+(defmethod perform* :next-direction-delay
+  [[_ ms]]
+  (timeout-> (or ms (:transition-ms @state/game-settings)) #(read @state/directions)))
 
 ;; Main read definition
-(defn read! [directions]
-  (swap! state/screen assoc :visible? false)
+(defn read [directions]
+  (log! directions)
   (let [direction (first directions)]
     (when-not (nil? direction)
       (if (vector? (first direction))
         ;; for when direction is a vector of nested direction
         ;; nested vectors do not work like a "stack" currently.
         ;; this is only the case for :if and :cond forms
-        (read! direction)
+        (read direction)
         (if (valid-direction? direction)
           (do (perform* direction)
               

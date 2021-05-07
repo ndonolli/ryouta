@@ -110,7 +110,7 @@
       {'height 'inherit
        'width 'inherit
        'position 'absolute
-       'z-index 10000}]]))
+       'z-index 9999}]]))
 
 ;; storing the style-ref is only to support hot-reloading with styles
 (defonce style-ref (atom nil))
