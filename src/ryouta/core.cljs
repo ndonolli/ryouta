@@ -5,10 +5,19 @@
             [ryouta.styles :as styles]
             [ryouta.util :as util]))
 
+
 (defn create-actor 
-  "Create an actor map.  The input actor will be given a unique identifier"
+  "Create an actor record and register with the engine"
   [actor]
-  (assoc actor :_id (util/generate-id)))
+  (let [id (util/generate-id)]
+    (swap! state/assets update-in [:paths] conj (get-in actor [:models :default]))
+    (assoc actor :_id id)))
+
+(defn create-scene
+  [scene]
+  (let [id (util/generate-id)]
+    (swap! state/assets update-in [:paths] conj (get-in scene [:background]))
+    (assoc scene :_id id)))
 
 (defn ^:export prepare
   "Loads the game db with any options"
@@ -22,4 +31,5 @@
   (styles/install!)
   (dom/render
    [crew/game]
-   (.getElementById js/document element-id)))
+   (.getElementById js/document element-id))
+  (state/preload-assets))

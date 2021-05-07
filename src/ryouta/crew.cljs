@@ -82,6 +82,7 @@
                         {:background (str "url(\"" (:background @state/scene) "\") no-repeat center center fixed")}}
     [dialogue]
     [choices]
-    [actors]]])
+    [actors]]
+   [:div#ry-assets {:style {:display "none"}}]])
 
 (comment (macroexpand '(util/timeout-> (+ 1 2) (+ 5 3))))

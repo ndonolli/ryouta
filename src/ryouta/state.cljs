@@ -21,6 +21,20 @@
 
 (def db (r/atom {}))
 
+(defn preload [url]
+  (let [img (js/Image.)]
+    (log! img)
+    (set! (.-src img) url)
+    (.append (.getElementById js/document "ry-assets") img)))
+
+(def assets (r/atom {:loaded? false
+                     :paths []}))
+
+(defn preload-assets []
+  (doseq [path (:paths @assets)]
+    (preload path))
+  (swap! assets assoc :loaded? true))
+
 (defn create-db! [opts]
   (reset! db (merge default opts)))
 

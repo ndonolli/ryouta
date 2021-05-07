@@ -12,9 +12,10 @@
             {:name "Makki"
              :models {:default "/images/actors/makki_default.png"}}))
 
+
 ;; Define your scenes
-(def town {:name "town" :background "/images/scenes/town.jpeg"})
-(def beach {:name "beach" :background "/images/scenes/beach.jpg"})
+(def town (ryouta/create-scene {:name "town" :background "/images/scenes/town.jpeg"}))
+(def beach (ryouta/create-scene {:name "beach" :background "/images/scenes/beach.jpg"}))
 
 
 (def script_beach [[:scene beach]
