@@ -2,10 +2,12 @@
   (:require [ryouta.state :as state]
             [garden.core :refer [css]]
             [garden.units :refer [percent px em vw]]
-            [garden.color :refer [rgba]]
+            [garden.color :refer [rgba rgb darken]]
             [goog.style])
   (:import [goog.html SafeStyleSheet]
            [goog.string Const]))
+
+(def BLUE [3 5 66 0.7])
 
 (defn styles []
   (let [{:keys [transition-ms]} @state/game-settings]
@@ -14,8 +16,10 @@
        'position 'absolute
        'width 'inherit
        'height 'inherit
+       'font-family 'sans-serif
        'z-index 1
-       'display 'flex}]
+       'display 'flex
+       'justify-content 'center}]
 
      [:.ry-fade-overlay
       {'width 'inherit
@@ -32,8 +36,10 @@
 
      [:.ry-dialogue
       {'position 'absolute
-       'background (rgba 0 0 0 0.7)
-       'width 'inherit
+       'background (apply rgba BLUE)
+       'border "7px solid white"
+       'border-radius (px 10)
+       'width (percent 90)
        'height (percent 30)
        'margin-bottom (percent 2)
        'align-self 'flex-end
@@ -41,22 +47,23 @@
 
      [:.ry-dialogue-content
       {'padding-top (px 50)
-       'padding-left (px 70)
-       'padding-right (px 70)
-       'padding-bottom (px 20)
+       'padding-left (px 50)
+       'padding-right (px 50)
+       'padding-bottom (px 50)
        'color 'white
        'font-size (em 1.5)
        'font-family 'helvetica}]
 
      [:.ry-dialogue-title
       {'position 'absolute
-       'border "1px solid black"
-       'border-radius (px 10)
-       'top (em -1.5)
-       'left (px 70)
-       'background (rgba 213 213 213 1)
+       'border-radius "10px 10px 0px 0px"
+       'border-bottom 'none
+       'color (apply rgb (take 3 BLUE))
+       'top (px -48)
+       'left (px -7)
+       'background 'white
        'height (em 2)
-       'padding (px 7)
+       'padding "0px 7px 0px 7px"
        'display 'flex
        'align-items 'center
        'font-size (em 1.5)}]
@@ -97,14 +104,15 @@
        'align-items 'center}]
 
      [:.ry-choice
-      {'padding (em 1)
+      {'padding (em 0.7)
        'margin (em 1)
-       'background (rgba 0 0 0 0.7)
+       'background (apply rgba BLUE)
        'color 'white
-       'border-radius (em 1)
+       'border-radius (px 7)
+       'border "2px solid white"
        'font-size (em 1.5)}
       [:&:hover
-       {'background (rgba 0 50 50 0.6)}]]
+       {'background (darken (apply rgba BLUE) 10)}]]
      
      [:.ry-screen
       {'height 'inherit

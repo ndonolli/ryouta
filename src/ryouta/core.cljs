@@ -31,7 +31,6 @@
                     (map :src)
                     (remove nil?))]
     (register-assets assets)
-    (util/log! @state/components)
     (swap! state/components assoc id screen)
     (assoc {} :_id id)))
 

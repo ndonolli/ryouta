@@ -216,7 +216,6 @@
 
 ;; Main read definition
 (defn read [directions]
-  (log! directions)
   (let [direction (first directions)]
     (when-not (nil? direction)
       (if (vector? (first direction))
