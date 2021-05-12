@@ -2,7 +2,7 @@
   (:require [ryouta.state :as state]
             [garden.core :refer [css]]
             [garden.units :refer [percent px em vw]]
-            [garden.color :refer [rgba rgb darken]]
+            [garden.color :refer [rgba rgb lighten]]
             [goog.style])
   (:import [goog.html SafeStyleSheet]
            [goog.string Const]))
@@ -112,7 +112,7 @@
        'border "2px solid white"
        'font-size (em 1.5)}
       [:&:hover
-       {'background (darken (apply rgba BLUE) 10)}]]
+       {'background (lighten (apply rgba BLUE) 20)}]]
      
      [:.ry-screen
       {'height 'inherit
