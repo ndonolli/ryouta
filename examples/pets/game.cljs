@@ -13,11 +13,17 @@
             {:name "Makki"
              :models {:default "/images/actors/makki_default.png"}}))
 
+(def narrator (ryouta/create-actor {:name nil}))
+
 
 ;; Define your scenes
 (def town (ryouta/create-scene {:name "town" :background "/images/scenes/town.jpeg"}))
 (def beach (ryouta/create-scene {:name "beach" :background "/images/scenes/beach.jpg"}))
 
+
+
+(def script_test [[:scene town]
+                  [:says narrator "narration narration"]])
 
 (def script_beach [[:scene beach]
                    [:says nathan "This is more like it!"]
@@ -69,21 +75,31 @@
   (ryouta/create-screen
    (fn []
      (direct/perform [:next-direction-delay 5000])
-     [:div.center-logo-container
+     [:div.center-logo-container.black-background
       [:div.text-align-center
        [:img.logo {:src "/images/imaginathan-games-logo.png"}]]])))
+
+(def character-creation
+  (ryouta/create-screen
+   (fn []
+     [:div.center-logo-container
+      [:div
+       [:h2 "What is your name?"]
+       [:input {:type "text"}]]])))
 
 (def menu
   (ryouta/create-screen
    (fn []
      [:div
       [:h1 "Welcome to the game"]
-      [:button.ry-clickable {:on-click #(direct/read script_town)} "start"]])))
+      [:button.ry-clickable {:on-click #(direct/perform [:screen character-creation])} "start"]])))
 
 ;; Define your script
 (def myscript [[:screen loading-screen {:transition? false}]
                [:screen imaginathan-splash]
                [:screen menu]])
+
+;; (def myscript [[:screen character-creation {:transition? false}]])
 
 
 

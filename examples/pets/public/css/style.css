@@ -9,10 +9,13 @@ body {
 
 .center-logo-container {
   display: flex;
-  background-color: black;
   height: inherit;
   justify-content: space-around;
   flex-direction: column;
+}
+
+.black-background {
+  background-color: black;
 }
 
 .text-align-center {

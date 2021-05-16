@@ -34,6 +34,9 @@
     (swap! state/components assoc id screen)
     (assoc {} :_id id)))
 
+(defn get-var [key]
+  (get @state/vars key))
+
 (defn ^:export prepare
   "Loads the game db with any options"
   ([] (prepare {}))

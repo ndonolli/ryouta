@@ -42,7 +42,7 @@
 (defn dialogue []
   (when (:visible? @state/dialogue)
     [:div.ry-dialogue
-     [:div.ry-dialogue-title (:actor @state/dialogue)]
+     (when (:actor @state/dialogue) [:div.ry-dialogue-title (:actor @state/dialogue)])
      [:div.ry-dialogue-content [typewriter (:line @state/dialogue) 25]]]))
 
 (defn choices []
