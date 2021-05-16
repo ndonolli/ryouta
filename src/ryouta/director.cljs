@@ -193,6 +193,10 @@
         (when (next clauses*)
           (recur (next clauses*)))))))
 
+(defmethod perform* :def
+  [[_ key val]]
+  (swap! @state/vars assoc key val))
+
 ;; Event dispatchers used more internally, although accessible to the user if needed
 (defmethod perform* :dialogue-line-complete
   []
