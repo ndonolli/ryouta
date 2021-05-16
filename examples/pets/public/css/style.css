@@ -39,3 +39,15 @@ body {
   height: inherit;
   transition: width 0.2s ease-in-out;
 }
+
+.centered-elems {
+  display: flex;
+  align-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.centered-elems > * {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

@@ -59,7 +59,7 @@
        'border-radius "10px 10px 0px 0px"
        'border-bottom 'none
        'color (apply rgb (take 3 BLUE))
-       'top (px -48)
+       'top (px -49)
        'left (px -7)
        'background 'white
        'height (em 2)

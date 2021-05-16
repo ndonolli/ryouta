@@ -57,6 +57,7 @@
 (def script_town [[:scene town]
                   [:group [[:enter nathan]
                            [:says nathan "Hi it's me nathan"]]]
+                  [:says nathan "Your name is :vars/main-character, right?"]
                   [:says nathan "I'm just here chillin in this town"]
                   [:says nathan "...but it would be nice to go to the beach!"]
                   [:choose [[:beach "Go to the beach"] [:nah "nah"]]]
@@ -85,14 +86,14 @@
   (ryouta/create-screen
    (fn []
      [:div.center-logo-container
-      [:div
+      [:div.centered-elems
        [:h2 "What is your name?"]
        [:input {:type "text" :value (get @state/vars :main-character)
                 :on-change #(let [new-val (-> % .-target .-value)]
                               (when (re-matches #"([A-Za-z]|\s)*" new-val)
                                 (swap! state/vars assoc :main-character new-val)))}]
        [:button {:disabled (s/blank? (get @state/vars :main-character))
-                 :on-click #(direct/read script_test)}
+                 :on-click #(direct/read script_town)}
         "Next"]]])))
 
 (def menu
@@ -103,11 +104,11 @@
       [:button.ry-clickable {:on-click #(direct/perform [:screen character-creation])} "start"]])))
 
 ;; Define your script
-;; (def myscript [[:screen loading-screen {:transition? false}]
-;;                [:screen imaginathan-splash]
-;;                [:screen menu]])
+(def myscript [[:screen loading-screen {:transition? false}]
+               [:screen imaginathan-splash]
+               [:screen menu]])
 
-(def myscript [[:screen character-creation {:transition? false}]])
+;; (def myscript [[:screen character-creation {:transition? false}]])
 
 
 

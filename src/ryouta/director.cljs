@@ -11,7 +11,7 @@
 (declare read)
 
 (defonce SPECIAL-FORMS [:cond :if])
-(defonce VARS-RE #":vars/\S+")
+(defonce VARS-RE #":vars/[^\s,.{}()]+")
 
 ;; helper fns, although I'm not sure how necessary this one is
 (defn- nil-or-invalid-error [empty-msg invalid-msg]
