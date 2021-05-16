@@ -1,5 +1,7 @@
 (ns pets.game
   (:require [ryouta.core :as ryouta]
+            [reagent.core :as r]
+            [clojure.string :as s]
             [ryouta.director :as direct]
             [ryouta.state :as state]
             [ryouta.util :refer [log!]]))
@@ -23,7 +25,7 @@
 
 
 (def script_test [[:scene town]
-                  [:says narrator "narration narration"]])
+                  [:says narrator "your name is :vars/main-character"]])
 
 (def script_beach [[:scene beach]
                    [:says nathan "This is more like it!"]
@@ -85,7 +87,13 @@
      [:div.center-logo-container
       [:div
        [:h2 "What is your name?"]
-       [:input {:type "text"}]]])))
+       [:input {:type "text" :value (get @state/vars :main-character)
+                :on-change #(let [new-val (-> % .-target .-value)]
+                              (when (re-matches #"([A-Za-z]|\s)*" new-val)
+                                (swap! state/vars assoc :main-character new-val)))}]
+       [:button {:disabled (s/blank? (get @state/vars :main-character))
+                 :on-click #(direct/read script_test)}
+        "Next"]]])))
 
 (def menu
   (ryouta/create-screen
@@ -95,11 +103,11 @@
       [:button.ry-clickable {:on-click #(direct/perform [:screen character-creation])} "start"]])))
 
 ;; Define your script
-(def myscript [[:screen loading-screen {:transition? false}]
-               [:screen imaginathan-splash]
-               [:screen menu]])
+;; (def myscript [[:screen loading-screen {:transition? false}]
+;;                [:screen imaginathan-splash]
+;;                [:screen menu]])
 
-;; (def myscript [[:screen character-creation {:transition? false}]])
+(def myscript [[:screen character-creation {:transition? false}]])
 
 
 

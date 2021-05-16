@@ -4,12 +4,14 @@
             [malli.error :as me]
             [ryouta.state :refer [db vars] :as state]
             [ryouta.util :refer [log! in? timeout->]]
+            [clojure.string :as s]
             [sci.core]))
 
 (declare VALID-ACTIONS)
 (declare read)
 
 (defonce SPECIAL-FORMS [:cond :if])
+(defonce VARS-RE #":vars/\S+")
 
 ;; helper fns, although I'm not sure how necessary this one is
 (defn- nil-or-invalid-error [empty-msg invalid-msg]
@@ -143,12 +145,18 @@
 
 (defmethod perform* :says
   [[_ actor dialogue]]
-  (swap! state/dialogue assoc
-         :line dialogue
-         :actor (:name actor)
-         :visible? true
-         :typing? true
-         :progressible? false))
+  (let [vars (re-seq VARS-RE dialogue)
+        vals (->> vars 
+                  (map #(keyword (subs % 6)))
+                  (map (partial get @state/vars)))
+        var-map (zipmap vars vals)
+        rendered-dialogue (s/replace dialogue VARS-RE #(get var-map %1))]
+    (swap! state/dialogue assoc
+           :line rendered-dialogue`
+           :actor (:name actor)
+           :visible? true
+           :typing? true
+           :progressible? false)))
 
 (defmethod perform* :group
   [[_ directions]]
