@@ -70,7 +70,7 @@
    (fn []
      (when (and (:loaded? @state/assets) (not @state/overlay-transitioning?))
        (direct/perform [:next-direction]))
-     [:div.center-logo-container
+     [:div.center-logo-container.black-background
       [:div.loading-bar
        [:div.loading-bar-progress {:style {:width (str (:percent-loaded @state/assets) "%")}}]]])))
 
