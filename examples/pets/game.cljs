@@ -11,11 +11,25 @@
              {:name "Nathan"
               :models {:default "/images/actors/nathan_default.png"}}))
 
-(def makki (ryouta/create-actor
-            {:name "Makki"
-             :models {:default "/images/actors/makki_default.png"}}))
+(def mr-snickers (ryouta/create-actor
+                  {:name "Mr. Snickers"
+                   :models {:default "/images/actors/mr_snickers.png"}}))
+
+(def pluto (ryouta/create-actor
+            {:name "Pluto"
+             :models {:default "/images/actors/pluto.png"}}))
+
+(def astrid (ryouta/create-actor
+             {:name "Astrid"
+              :models {:default "images/actors/astrid.png"}}))
+
+(def copper (ryouta/create-actor
+             {:name "Copper"
+              :models {:defailt "images/actors/copper.png"}}))
 
 (def narrator (ryouta/create-actor {:name nil}))
+(def diego (ryouta/create-actor {:name "Diego"
+                                 :models {:default "/images/actors/diego.png"}}))
 
 
 ;; Define your scenes
@@ -28,42 +42,60 @@
                   [:says narrator "your name is :vars/main-character"]])
 
 (def script_beach [[:scene beach]
-                   [:says nathan "This is more like it!"]
-                   [:group [[:enter makki {:position :right}]
-                            [:move nathan :left]]]
-                   [:says makki "CHAAANGE PLACEESS"]
-                   [:group [[:move nathan :right]
-                            [:move makki :left]]]
-                   [:says nathan "Who is that babe?"]
-                   [:says makki "omg wtf creep"]
-                   [:says nathan "Wait...I"]
-                   [:says makki "Get lost, loser."]
-                   [:exit nathan]
-                   [:group [[:says makki "Finally I have the beach to myself."]
-                            [:move makki :center]]]
-                   [:says makki "I'm going to say something really long-winded to see how this affects the dialogue.  I wonder how long it can be.  I mean three sentences is a lot to fit in one line of dialogue, don't you agree?"]
-                   [:says makki "Thank you for coming to my TED talk."]
+                   [:says diego "This is more like it!"]
+                   [:group [[:enter mr-snickers
+                    {:position :right}]
+                            [:move diego :left]]]
+                   [:says mr-snickers
+                    "CHAAANGE PLACEESS"]
+                   [:group [[:move diego :right]
+                            [:move mr-snickers
+                             :left]]]
+                   [:says diego "Who is that babe?"]
+                   [:says mr-snickers
+                    "omg wtf creep"]
+                   [:says diego "Wait...I"]
+                   [:says mr-snickers
+                    "Get lost, loser."]
+                   [:exit diego]
+                   [:group [[:says mr-snickers
+                    "Finally I have the beach to myself."]
+                            [:move mr-snickers
+                             :center]]]
+                   [:says mr-snickers
+                    "I'm going to say something really long-winded to see how this affects the dialogue.  I wonder how long it can be.  I mean three sentences is a lot to fit in one line of dialogue, don't you agree?"]
+                   [:says mr-snickers
+                    "Thank you for coming to my TED talk."]
                    [:choose [[:option1 "Option 1"]
                              [:option2 "Option 2"]]]
                    [:cond
-                    :option1 [:says makki "you have chosen option1"]
-                    :option2 [[:says makki "you have chosen option2"]
-                              [:says makki "here is an anonymous poll"]
+                    :option1 [:says mr-snickers
+                     "you have chosen option1"]
+                    :option2 [[:says mr-snickers
+                     "you have chosen option2"]
+                              [:says mr-snickers
+                               "here is an anonymous poll"]
                               [:choose ["the first thing" "the second thing"]]
                               [:cond
-                               :%1 [:says makki "numbuh 1"]
-                               :%2 [:says makki "numbuh 2"]]]]])
+                               :%1 [:says mr-snickers
+                                "numbuh 1"]
+                               :%2 [:says mr-snickers
+                                "numbuh 2"]]]]])
 
 (def script_town [[:scene town]
-                  [:group [[:enter nathan]
-                           [:says nathan "Hi it's me nathan"]]]
-                  [:says nathan "Your name is :vars/main-character, right?"]
-                  [:says nathan "I'm just here chillin in this town"]
-                  [:says nathan "...but it would be nice to go to the beach!"]
+                  [:group [[:enter diego]
+                           [:says diego "Hi it's me nathan"]]]
+                  [:says diego "Your name is :vars/main-character, right?"]
+                  [:says diego "I'm just here chillin in this town"]
+                  [:says diego "...but it would be nice to go to the beach!"]
                   [:choose [[:beach "Go to the beach"] [:nah "nah"]]]
                   [:cond
                    :beach [script_beach]
-                   :nah [:says nathan "nevermind"]]])
+                   :nah [:says diego "nevermind"]]])
+
+(def characters (vector diego mr-snickers pluto astrid copper))
+(def character-directions (apply concat (map #(vector [:enter %] [:says % (str "hey it's me " (:name %))] [:exit %]) characters)))
+(def character-test (conj character-directions [:scene town]))
 
 (def loading-screen
   (ryouta/create-screen
@@ -115,7 +147,7 @@
 ;; This is your main function to initialize the game
 (defn ^:export main []
   ;; Set up the directions, options, and any other game state
-  (ryouta/prepare {:directions myscript
+  (ryouta/prepare {:directions character-test
                    :game-settings {:transition-ms 1000}})
   (ryouta/register-assets ["https://c8.alamy.com/comp/F1WJN3/full-moon-harvest-moon-large-file-size-from-the-archives-of-press-F1WJN3.jpg"
                            "https://captbbrucato.files.wordpress.com/2011/08/dscf0585_stitch-besonhurst-2.jpg"
