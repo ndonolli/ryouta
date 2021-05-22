@@ -23,6 +23,10 @@
              {:name "Astrid"
               :models {:default "images/actors/astrid.png"}}))
 
+(def three-musketeers (ryouta/create-actor
+                       {:name "Three Musketeers"
+                        :models {:default "images/actors/three_musketeers.png"}}))
+
 (def copper (ryouta/create-actor
              {:name "Copper"
               :models {:defailt "images/actors/copper.png"}}))
@@ -30,13 +34,20 @@
 (def narrator (ryouta/create-actor {:name nil}))
 (def diego (ryouta/create-actor {:name "Diego"
                                  :models {:default "/images/actors/diego.png"}}))
+(def foss (ryouta/create-actor {:name "Foss"
+                                :models {:default "images/actors/foss.png"}}))
 
+(def tillie (ryouta/create-actor {:name "Tilie"
+                                :models {:default "images/actors/tillie.png"}}))
 
 ;; Define your scenes
 (def town (ryouta/create-scene {:name "town" :background "/images/scenes/town.jpeg"}))
 (def beach (ryouta/create-scene {:name "beach" :background "/images/scenes/beach.jpg"}))
 
 
+(def characters (vector diego three-musketeers copper foss tillie))
+(def character-directions (apply concat (map #(vector [:enter %] [:says % (str "hey it's me " (:name %))] [:exit %]) characters)))
+(def character-test (conj character-directions [:scene town]))
 
 (def script_test [[:scene town]
                   [:says narrator "your name is :vars/main-character"]])
@@ -92,10 +103,6 @@
                   [:cond
                    :beach [script_beach]
                    :nah [:says diego "nevermind"]]])
-
-(def characters (vector diego mr-snickers pluto astrid copper))
-(def character-directions (apply concat (map #(vector [:enter %] [:says % (str "hey it's me " (:name %))] [:exit %]) characters)))
-(def character-test (conj character-directions [:scene town]))
 
 (def loading-screen
   (ryouta/create-screen
