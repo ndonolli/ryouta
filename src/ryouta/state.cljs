@@ -1,7 +1,7 @@
 (ns ryouta.state
   (:require [reagent.core :as r]
             [reagent.ratom :as ratom]
-            [ryouta.util :refer [log!]]
+            [ryouta.util :refer [log!] :as util]
             [cljs.reader :as reader]))
 
 (defonce default {:vars {}
@@ -46,6 +46,7 @@
   (create-db! (reader/read-string (.getItem js/localStorage key))))
 
 (def components (r/atom {}))
+(def audios (r/atom {}))
 
 (def active-component (ratom/make-reaction
                        #(get @components (:component @screen))))
@@ -64,10 +65,19 @@
                       (>= percent-loaded 100) (assoc :loaded? true))))))
 
 (defn preload [url]
-  (let [img (js/Image.)]
-    (set! (.-onload img) on-asset-load)
-    (set! (.-src img) url)
-    (.append (.getElementById js/document "ry-assets") img)))
+  (case (util/get-file-type url)
+    :image
+    (let [img (js/Image.)]
+      (set! (.-onload img) on-asset-load)
+      (set! (.-src img) url)
+      (.append (.getElementById js/document "ry-assets") img))
+
+    :audio
+    (let [audio (js/Audio.)
+          asset-id ]
+      (set! (.-canplaythrough audio) on-asset-load)
+      (set! (.-src audio) url)
+      (.append (.getElementById js/document "ry-assets") audio))))
 
 (defn preload-assets []
   (doseq [path (:paths @assets)]
