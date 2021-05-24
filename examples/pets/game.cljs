@@ -7,22 +7,7 @@
             [ryouta.util :refer [log!]]))
 
 ;; Define your characters
-(def nathan (ryouta/create-actor
-             {:name "Nathan"
-              :models {:default "/images/actors/nathan_default.png"}}))
-
-(def mr-snickers (ryouta/create-actor
-                  {:name "Mr. Snickers"
-                   :models {:default "/images/actors/mr_snickers.png"}}))
-
-(def pluto (ryouta/create-actor
-            {:name "Pluto"
-             :models {:default "/images/actors/pluto.png"}}))
-
-(def astrid (ryouta/create-actor
-             {:name "Astrid"
-              :models {:default "images/actors/astrid.png"}}))
-
+(def narrator (ryouta/create-actor {:name nil}))
 (def three-musketeers (ryouta/create-actor
                        {:name "Three Musketeers"
                         :models {:default "images/actors/three_musketeers.png"}}))
@@ -31,67 +16,28 @@
              {:name "Copper"
               :models {:defailt "images/actors/copper.png"}}))
 
-(def narrator (ryouta/create-actor {:name nil}))
 (def diego (ryouta/create-actor {:name "Diego"
                                  :models {:default "/images/actors/diego.png"}}))
 (def foss (ryouta/create-actor {:name "Foss"
                                 :models {:default "images/actors/foss.png"}}))
 
 (def tillie (ryouta/create-actor {:name "Tilie"
-                                :models {:default "images/actors/tillie.png"}}))
+                                  :models {:default "images/actors/tillie.png"}}))
+
+(def melissumz (ryouta/create-actor {:name "Melissumz"
+                                     :models {:default "images/actors/melissumz.png"}}))
 
 ;; Define your scenes
 (def town (ryouta/create-scene {:name "town" :background "/images/scenes/town.jpeg"}))
 (def beach (ryouta/create-scene {:name "beach" :background "/images/scenes/beach.jpg"}))
 
 
-(def characters (vector diego three-musketeers copper foss tillie))
+(def characters (vector diego three-musketeers copper foss tillie melissumz))
 (def character-directions (apply concat (map #(vector [:enter %] [:says % (str "hey it's me " (:name %))] [:exit %]) characters)))
 (def character-test (conj character-directions [:scene town]))
 
 (def script_test [[:scene town]
                   [:says narrator "your name is :vars/main-character"]])
-
-(def script_beach [[:scene beach]
-                   [:says diego "This is more like it!"]
-                   [:group [[:enter mr-snickers
-                    {:position :right}]
-                            [:move diego :left]]]
-                   [:says mr-snickers
-                    "CHAAANGE PLACEESS"]
-                   [:group [[:move diego :right]
-                            [:move mr-snickers
-                             :left]]]
-                   [:says diego "Who is that babe?"]
-                   [:says mr-snickers
-                    "omg wtf creep"]
-                   [:says diego "Wait...I"]
-                   [:says mr-snickers
-                    "Get lost, loser."]
-                   [:exit diego]
-                   [:group [[:says mr-snickers
-                    "Finally I have the beach to myself."]
-                            [:move mr-snickers
-                             :center]]]
-                   [:says mr-snickers
-                    "I'm going to say something really long-winded to see how this affects the dialogue.  I wonder how long it can be.  I mean three sentences is a lot to fit in one line of dialogue, don't you agree?"]
-                   [:says mr-snickers
-                    "Thank you for coming to my TED talk."]
-                   [:choose [[:option1 "Option 1"]
-                             [:option2 "Option 2"]]]
-                   [:cond
-                    :option1 [:says mr-snickers
-                     "you have chosen option1"]
-                    :option2 [[:says mr-snickers
-                     "you have chosen option2"]
-                              [:says mr-snickers
-                               "here is an anonymous poll"]
-                              [:choose ["the first thing" "the second thing"]]
-                              [:cond
-                               :%1 [:says mr-snickers
-                                "numbuh 1"]
-                               :%2 [:says mr-snickers
-                                "numbuh 2"]]]]])
 
 (def script_town [[:scene town]
                   [:group [[:enter diego]
@@ -101,7 +47,7 @@
                   [:says diego "...but it would be nice to go to the beach!"]
                   [:choose [[:beach "Go to the beach"] [:nah "nah"]]]
                   [:cond
-                   :beach [script_beach]
+                   :beach []
                    :nah [:says diego "nevermind"]]])
 
 (def loading-screen

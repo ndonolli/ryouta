@@ -34,6 +34,13 @@
     (swap! state/components assoc id screen)
     (assoc {} :_id id)))
 
+(defn create-audio
+  [audio]
+  (let [id (util/generate-id)]
+    (register-assets #{(:path audio)})
+    (swap! state/audios assoc id audio)
+    (assoc audio :_id id)))
+
 (defn get-var [key]
   (get @state/vars key))
 
