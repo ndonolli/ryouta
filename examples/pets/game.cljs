@@ -31,6 +31,8 @@
 (def town (ryouta/create-scene {:name "town" :background "/images/scenes/town.jpeg"}))
 (def beach (ryouta/create-scene {:name "beach" :background "/images/scenes/beach.jpg"}))
 
+(def music (ryouta/create-audio {:name "menu" :path "/audio/hatoful-test.mp3"}))
+
 
 (def characters (vector diego three-musketeers copper foss tillie melissumz))
 (def character-directions (apply concat (map #(vector [:enter %] [:says % (str "hey it's me " (:name %))] [:exit %]) characters)))
@@ -100,7 +102,7 @@
 ;; This is your main function to initialize the game
 (defn ^:export main []
   ;; Set up the directions, options, and any other game state
-  (ryouta/prepare {:directions character-test
+  (ryouta/prepare {:directions myscript
                    :game-settings {:transition-ms 1000}})
   (ryouta/register-assets ["https://c8.alamy.com/comp/F1WJN3/full-moon-harvest-moon-large-file-size-from-the-archives-of-press-F1WJN3.jpg"
                            "https://captbbrucato.files.wordpress.com/2011/08/dscf0585_stitch-besonhurst-2.jpg"

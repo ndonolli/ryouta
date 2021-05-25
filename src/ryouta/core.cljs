@@ -36,10 +36,11 @@
 
 (defn create-audio
   [audio]
-  (let [id (util/generate-id)]
+  (let [id (util/generate-id)
+        audio (assoc audio :_id id)]
     (register-assets #{(:path audio)})
     (swap! state/audios assoc id audio)
-    (assoc audio :_id id)))
+    audio))
 
 (defn get-var [key]
   (get @state/vars key))

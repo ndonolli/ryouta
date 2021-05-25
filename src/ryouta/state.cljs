@@ -74,9 +74,13 @@
 
     :audio
     (let [audio (js/Audio.)
-          asset-id ]
-      (set! (.-canplaythrough audio) on-asset-load)
+          asset-id (->> (vals @audios)
+                        (filter #(= url (:path %)))
+                        (map :_id)
+                        (first))]
+      (set! (.-oncanplaythrough audio) on-asset-load)
       (set! (.-src audio) url)
+      (when asset-id (set! (.-id audio) (str "ry-audio" asset-id)))
       (.append (.getElementById js/document "ry-assets") audio))))
 
 (defn preload-assets []
