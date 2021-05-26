@@ -152,11 +152,15 @@
         var-map (zipmap vars vals)
         rendered-dialogue (s/replace dialogue VARS-RE #(get var-map %1))]
     (swap! state/dialogue assoc
-           :line rendered-dialogue`
+           :line rendered-dialogue
            :actor (:name actor)
            :visible? true
            :typing? true
            :progressible? false)))
+
+(defmethod perform* :play
+  [[_ audio opts]]
+  (let [audio-elem ()]))
 
 (defmethod perform* :group
   [[_ directions]]
