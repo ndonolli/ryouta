@@ -146,7 +146,7 @@
 (defmethod perform* :says
   [[_ actor dialogue]]
   (let [vars (re-seq VARS-RE dialogue)
-        vals (->> vars 
+        vals (->> vars
                   (map #(keyword (subs % 6)))
                   (map (partial get @state/vars)))
         var-map (zipmap vars vals)
@@ -160,7 +160,17 @@
 
 (defmethod perform* :play
   [[_ audio opts]]
-  (let [audio-elem ()]))
+  (->> (:id audio)
+       (str "ry-audio")
+       (.getElementById js/document)
+       (.play)))
+
+(defmethod perform* :mute
+  [[_ audio opts]]
+  (->> (:id audio)
+       (str "ry-audio")
+       (.getElementById js/document)
+       (.play)))
 
 (defmethod perform* :group
   [[_ directions]]
