@@ -80,7 +80,7 @@
                         (first))]
       (set! (.-oncanplaythrough audio) on-asset-load)
       (set! (.-src audio) url)
-      (when asset-id (set! (.-id audio) (str "ry-audio" asset-id)))
+      (when asset-id (set! (.. audio -dataset -asset_id) (str "ry-audio" asset-id)))
       (.append (.getElementById js/document "ry-assets") audio))))
 
 (defn preload-assets []

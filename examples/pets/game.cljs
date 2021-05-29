@@ -42,11 +42,15 @@
                   [:says narrator "your name is :vars/main-character"]])
 
 (def script_town [[:scene town]
-                  [:group [[:enter diego]
+                  [:group [[:play-audio music {:fade 1000}]
+                           [:enter diego]
                            [:says diego "Hi it's me nathan"]]]
                   [:says diego "Your name is :vars/main-character, right?"]
                   [:says diego "I'm just here chillin in this town"]
                   [:says diego "...but it would be nice to go to the beach!"]
+                  [:stop-audio music {:fade 5000}]
+                  [:says diego "lets start again"]
+                  [:play-audio music {:loop? true :fade 5000}]
                   [:choose [[:beach "Go to the beach"] [:nah "nah"]]]
                   [:cond
                    :beach []
@@ -102,7 +106,7 @@
 ;; This is your main function to initialize the game
 (defn ^:export main []
   ;; Set up the directions, options, and any other game state
-  (ryouta/prepare {:directions myscript
+  (ryouta/prepare {:directions script_town
                    :game-settings {:transition-ms 1000}})
   (ryouta/register-assets ["https://c8.alamy.com/comp/F1WJN3/full-moon-harvest-moon-large-file-size-from-the-archives-of-press-F1WJN3.jpg"
                            "https://captbbrucato.files.wordpress.com/2011/08/dscf0585_stitch-besonhurst-2.jpg"

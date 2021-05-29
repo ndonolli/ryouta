@@ -3,8 +3,10 @@
   (:require [malli.core :as m]
             [malli.error :as me]
             [ryouta.state :refer [db vars] :as state]
-            [ryouta.util :refer [log! in? timeout->]]
+            [ryouta.util :refer [log! in? timeout-> get-audio-asset-id]]
+            [ryouta.audio :as audio]
             [clojure.string :as s]
+            ["jQuery" :as $]
             [sci.core]))
 
 (declare VALID-ACTIONS)
@@ -163,22 +165,11 @@
 
 (defmethod perform* :play-audio
   [[_ audio opts]]
-  (->> (:id audio)
-       (str "ry-audio")
-       (.getElementById js/document)
-       (.play)))
+  (audio/play (get-audio-asset-id (:_id audio)) opts))
 
 (defmethod perform* :stop-audio
-  [[_ audios]]
-  (let [selector (if (count audios)
-                   (->> audios
-                        (map :_id)
-                        (map (partial str "#ry-audio"))
-                        (s/join ", "))
-                   "audio")]
-    (doseq [elem (.querySelectorAll js/document selector)]
-      (.pause elem)
-      (set! (.-currentTime elem) 0))))
+  [[_ audio opts]]
+  (audio/stop (get-audio-asset-id (:_id audio)) opts))
 
 (defmethod perform* :group
   [[_ directions]]

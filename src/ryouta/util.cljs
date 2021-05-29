@@ -1,5 +1,6 @@
 (ns ryouta.util
-  (:require [clojure.string :as s]))
+  (:require [clojure.string :as s]
+            ["jQuery" :as $]))
 
 (defn generate-id
   "Generates a unique identifier"
@@ -56,3 +57,6 @@
                         (s/split ".")
                         (second)))
       nil)))
+
+(defn get-audio-asset-id [id]
+  (str "audio[data-asset_id='ry-audio" id "']"))
