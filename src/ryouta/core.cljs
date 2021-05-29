@@ -19,7 +19,7 @@
 (defn create-scene
   [scene]
   (let [id (util/generate-id)]
-    (register-assets #{(:background scene)})
+    (register-assets #{(:path scene)})
     (assoc scene :_id id)))
 
 (defn create-screen

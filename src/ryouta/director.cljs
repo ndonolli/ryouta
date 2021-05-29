@@ -20,9 +20,12 @@
 
 ;; schemas
 (defonce Actor [:map
-                [:_id keyword?]
                 [:name string?]
                 [:models [:map-of :keyword :string]]])
+
+(defonce Asset [:map
+                [:name string?]
+                [:path string?]])
 
 (defonce Action [:fn {:error/fn (nil-or-invalid-error "Direction requires an action." "is not a valid action.")}
                  (partial VALID-ACTIONS)])
@@ -158,19 +161,24 @@
            :typing? true
            :progressible? false)))
 
-(defmethod perform* :play
+(defmethod perform* :play-audio
   [[_ audio opts]]
   (->> (:id audio)
        (str "ry-audio")
        (.getElementById js/document)
        (.play)))
 
-(defmethod perform* :mute
-  [[_ audio opts]]
-  (->> (:id audio)
-       (str "ry-audio")
-       (.getElementById js/document)
-       (.play)))
+(defmethod perform* :stop-audio
+  [[_ audios]]
+  (let [selector (if (count audios)
+                   (->> audios
+                        (map :_id)
+                        (map (partial str "#ry-audio"))
+                        (s/join ", "))
+                   "audio")]
+    (doseq [elem (.querySelectorAll js/document selector)]
+      (.pause elem)
+      (set! (.-currentTime elem) 0))))
 
 (defmethod perform* :group
   [[_ directions]]

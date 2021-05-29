@@ -78,7 +78,7 @@
    (when (:visible? @state/screen)
      [custom-screen @state/active-component])
    [:div.ry-background {:style
-                        {:background (str "url(\"" (:background @state/scene) "\") no-repeat center center fixed")}}
+                        {:background (str "url(\"" (:path @state/scene) "\") no-repeat center center fixed")}}
     [dialogue]
     [choices]
     [actors]]

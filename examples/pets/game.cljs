@@ -28,8 +28,8 @@
                                      :models {:default "images/actors/melissumz.png"}}))
 
 ;; Define your scenes
-(def town (ryouta/create-scene {:name "town" :background "/images/scenes/town.jpeg"}))
-(def beach (ryouta/create-scene {:name "beach" :background "/images/scenes/beach.jpg"}))
+(def town (ryouta/create-scene {:name "town" :path "/images/scenes/town.jpeg"}))
+(def beach (ryouta/create-scene {:name "beach" :path "/images/scenes/beach.jpg"}))
 
 (def music (ryouta/create-audio {:name "menu" :path "/audio/hatoful-test.mp3"}))
 
