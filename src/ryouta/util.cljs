@@ -57,6 +57,3 @@
                         (s/split ".")
                         (second)))
       nil)))
-
-(defn get-audio-asset-id [id]
-  (str "audio[data-asset_id='ry-audio" id "']"))

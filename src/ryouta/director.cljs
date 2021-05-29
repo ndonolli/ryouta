@@ -3,7 +3,7 @@
   (:require [malli.core :as m]
             [malli.error :as me]
             [ryouta.state :refer [db vars] :as state]
-            [ryouta.util :refer [log! in? timeout-> get-audio-asset-id]]
+            [ryouta.util :refer [log! in? timeout->]]
             [ryouta.audio :as audio]
             [clojure.string :as s]
             ["jQuery" :as $]
@@ -165,11 +165,11 @@
 
 (defmethod perform* :play-audio
   [[_ audio opts]]
-  (audio/play (get-audio-asset-id (:_id audio)) opts))
+  (audio/play (audio/get-asset-id (:_id audio)) opts))
 
 (defmethod perform* :stop-audio
   [[_ audio opts]]
-  (audio/stop (get-audio-asset-id (:_id audio)) opts))
+  (audio/stop (audio/get-asset-id (:_id audio)) opts))
 
 (defmethod perform* :group
   [[_ directions]]
