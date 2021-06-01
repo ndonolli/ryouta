@@ -1,5 +1,5 @@
 (ns ryouta.audio
-  (:require ["jQuery" :as $]
+  (:require ["jquery" :as $]
             [ryouta.util :refer [log! timeout->]]))
 
 (defn play
