@@ -1,6 +1,5 @@
 (ns ryouta.util
-  (:require [clojure.string :as s]
-            ["jQuery" :as $]))
+  (:require [clojure.string :as s]))
 
 (defn generate-id
   "Generates a unique identifier"

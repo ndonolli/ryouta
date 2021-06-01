@@ -1,9 +1,7 @@
 (ns ryouta.state
   (:require [reagent.core :as r]
             [reagent.ratom :as ratom]
-            [ryouta.audio :as audio]
             [ryouta.util :refer [log!] :as util]
-            ["jQuery" :as $]
             [cljs.reader :as reader]))
 
 (defonce default {:vars {}

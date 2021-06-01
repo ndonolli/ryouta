@@ -6,7 +6,6 @@
             [ryouta.util :refer [log! in? timeout->]]
             [ryouta.audio :as audio]
             [clojure.string :as s]
-            ["jQuery" :as $]
             [sci.core]))
 
 (declare VALID-ACTIONS)
