@@ -164,11 +164,11 @@
 
 (defmethod perform* :play-audio
   [[_ audio opts]]
-  (audio/play (audio/get-asset-id (:_id audio)) opts))
+  (audio/play (audio/get-asset-id-selector (:_id audio)) opts))
 
 (defmethod perform* :stop-audio
   [[_ audio opts]]
-  (audio/stop (audio/get-asset-id (:_id audio)) opts))
+  (audio/stop (audio/get-asset-id-selector (:_id audio)) opts))
 
 (defmethod perform* :group
   [[_ directions]]

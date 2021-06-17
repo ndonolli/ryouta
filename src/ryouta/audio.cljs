@@ -26,5 +26,5 @@
       0 #(.animate audio-elem #js {:volume 0} fade)
       fade #(.pause (.get audio-elem 0))))))
 
-(defn get-asset-id [id]
+(defn get-asset-id-selector [id]
   (str "audio[data-asset_id='ry-audio" id "']"))
