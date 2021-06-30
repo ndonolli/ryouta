@@ -23,6 +23,11 @@
 
 (def db (r/atom {}))
 
+(def assets (r/atom {:loaded? false
+                     :load-count 0
+                     :percent-loaded 0
+                     :paths #{}}))
+
 (def dialogue (r/cursor db [:dialogue]))
 (def directions (r/cursor db [:directions]))
 (def scene (r/cursor db [:scene]))
@@ -50,11 +55,6 @@
 
 (def active-component (ratom/make-reaction
                        #(get @components (:component @screen))))
-
-(def assets (r/atom {:loaded? false
-                     :load-count 0
-                     :percent-loaded 0
-                     :paths #{}}))
 
 (defn on-asset-load []
   (swap! assets (fn [assets*]
