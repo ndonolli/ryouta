@@ -15,6 +15,7 @@
                              :line ""
                              :choices nil}
                   :actors {}
+                  :paused? false
                   :directions []
                   :history []
                   :scene {}
@@ -38,6 +39,7 @@
 (def progressible? (r/cursor db [:dialogue :progressible?]))
 (def game-settings (r/cursor db [:game-settings]))
 (def screen (r/cursor db [:screen]))
+(def paused? (r/cursor db [:paused?]))
 
 (defn create-db! [opts]
   (reset! db (merge default opts)))

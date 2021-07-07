@@ -34,6 +34,12 @@
        'display 'flex
        'user-select 'none}]
 
+     [:.ry-navbar
+      {'position 'absolute
+       'height (em 2)
+       'width (percent 100)
+       'padding-top (em 0.5)}]
+
      [:.ry-dialogue
       {'position 'absolute
        'background (apply rgba BLUE)
@@ -113,7 +119,7 @@
        'font-size (em 1.5)}
       [:&:hover
        {'background (lighten (apply rgba BLUE) 20)}]]
-     
+
      [:.ry-screen
       {'height 'inherit
        'width 'inherit
