@@ -39,6 +39,9 @@
           (type* (seq text)))
         [:span (if (:typing? @state/dialogue) @typed (:line @state/dialogue))]))))
 
+(defn navbar []
+  [:div.ry-navbar])
+
 (defn dialogue []
   (when (:visible? @state/dialogue)
     [:div.ry-dialogue
@@ -68,6 +71,9 @@
   [:span.ry-fade-overlay {:style {:opacity (if @state/overlay? 1 0)
                                   :z-index (if @state/overlay-transitioning? 10000 1)}}])
 
+(defn pause-menu []
+  [:span.ry-pause-menu-bg])
+
 (defn custom-screen [screen-component]
   [:span.ry-screen
    [screen-component]])
@@ -79,6 +85,8 @@
      [custom-screen @state/active-component])
    [:div.ry-background {:style
                         {:background (str "url(\"" (:path @state/scene) "\") no-repeat center center fixed")}}
+    (when @state/paused? [pause-menu])
+    [navbar]
     [dialogue]
     [choices]
     [actors]]

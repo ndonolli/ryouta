@@ -17,12 +17,14 @@
     (assoc actor :_id id)))
 
 (defn create-scene
+  "Create a scene record and register with the engine"
   [scene]
   (let [id (util/generate-id)]
     (register-assets #{(:path scene)})
     (assoc scene :_id id)))
 
 (defn create-screen
+  "Create a scene record and register with the engine"
   [screen]
   (let [id (util/generate-id)
         assets (->> (screen)
@@ -35,6 +37,7 @@
     (assoc {} :_id id)))
 
 (defn create-audio
+  "Create an audio record and register with the engine"
   [audio]
   (let [id (util/generate-id)
         audio (assoc audio :_id id)]
@@ -42,8 +45,6 @@
     (swap! state/audios assoc id audio)
     audio))
 
-(defn get-var [key]
-  (get @state/vars key))
 
 (defn ^:export prepare
   "Loads the game db with any options"

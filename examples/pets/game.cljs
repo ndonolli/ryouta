@@ -97,10 +97,11 @@
         [:button.ry-clickable {:on-click #(direct/perform [:screen character-creation])} "start"]])})))
 
 ;; Define your script
-(def myscript [[:screen loading-screen {:transition? false}]
-               [:screen imaginathan-splash]
-               [:screen menu]])
+;; (def myscript [[:screen loading-screen {:transition? false}]
+;;                [:screen imaginathan-splash]
+;;                [:screen menu]])
 
+(def myscript script_town)
 ;; (def myscript [[:screen character-creation {:transition? false}]])
 
 

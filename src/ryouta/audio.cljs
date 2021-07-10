@@ -14,7 +14,7 @@
             (set! (.-currentTime elem) 0)
             (when loop?
               (set! (.-loop elem) true))
-            (.play elem)))))))
+            (comment .play elem)))))))
 
 (defn stop
   ([audio-selector] (stop audio-selector {}))
