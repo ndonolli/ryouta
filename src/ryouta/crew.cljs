@@ -3,7 +3,8 @@
             [reagent.core :as r]
             [ryouta.state :as state]
             [ryouta.director :as direct]
-            [ryouta.util :as util]))
+            [ryouta.util :as util]
+            [goog.string]))
 
 (def css-transition-group
   (r/adapt-react-class rtg/CSSTransitionGroup))
@@ -40,7 +41,10 @@
         [:span (if (:typing? @state/dialogue) @typed (:line @state/dialogue))]))))
 
 (defn navbar []
-  [:div.ry-navbar])
+  [:div.ry-navbar
+   [:span.ry-pause-button.ry-square.ry-clickable
+    {:on-click #(direct/perform [:pause])}
+    (goog.string/unescapeEntities "&#10074;&#10074;")]])
 
 (defn dialogue []
   (when (:visible? @state/dialogue)

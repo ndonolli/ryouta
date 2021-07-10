@@ -35,10 +35,23 @@
        'user-select 'none}]
 
      [:.ry-navbar
-      {'position 'absolute
+      {'display 'flex
+       'flex-direction 'row-reverse
+       'position 'absolute
        'height (em 2)
        'width (percent 100)
        'padding-top (em 0.5)}]
+     
+     [:.ry-pause-button
+      {'width (em 1.6)
+       'height (em 1.6)
+       'background-color (apply rgba BLUE)
+       'color 'white
+       'text-align 'center
+       'z-index 1001
+       'cursor 'pointer
+       'margin-right (em 1)
+       'margin-left (em 1)}]
 
      [:.ry-dialogue
       {'position 'absolute
@@ -124,7 +137,9 @@
       {'height 'inherit
        'width 'inherit
        'position 'absolute
-       'z-index 9999}]]))
+       'z-index 9999}]
+     
+     ]))
 
 ;; storing the style-ref is only to support hot-reloading with styles
 (defonce style-ref (atom nil))

@@ -238,6 +238,9 @@
   (when @state/directions
     (timeout-> (or ms (:transition-ms @state/game-settings)) #(read @state/directions))))
 
+(defmethod perform* :pause
+  [] (reset! state/paused? true))
+
 ;; Main read definition
 (defn read [directions]
   (let [direction (first directions)]
