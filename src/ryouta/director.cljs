@@ -241,6 +241,9 @@
 (defmethod perform* :pause
   [] (reset! state/paused? true))
 
+(defmethod perform* :unpause
+  [] (reset! state/paused? false))
+
 ;; Main read definition
 (defn read [directions]
   (let [direction (first directions)]

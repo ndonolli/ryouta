@@ -91,4 +91,4 @@
 
 (add-watch db :log
            (fn [key this old-state new-state]
-             (tap> @this)))
+             (log! @this)))

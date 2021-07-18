@@ -52,6 +52,13 @@
        'cursor 'pointer
        'margin-right (em 1)
        'margin-left (em 1)}]
+     
+     [:span.ry-pause-menu-bg
+      {'height (percent 100)
+       'width (percent 100)
+       'position 'absolute
+       'z-index 1001
+       'background (rgba 0 0 0 0.7)}]
 
      [:.ry-dialogue
       {'position 'absolute

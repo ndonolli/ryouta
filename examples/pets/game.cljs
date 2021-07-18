@@ -38,20 +38,7 @@
 (def character-directions (apply concat (map #(vector [:enter %] [:says % (str "hey it's me " (:name %))] [:exit %]) characters)))
 (def character-test (conj character-directions [:scene town]))
 
-(def script_test [[:scene town]
-                  [:says narrator "your name is :vars/main-character"]])
-
-(def script_town [[:scene town]
-                  [:group [[:enter diego]
-                           [:says diego "Hi it's me nathan"]]]
-                  [:says diego "Your name is :vars/main-character, right?"]
-                  [:says diego "I'm just here chillin in this town"]
-                  [:says diego "...but it would be nice to go to the beach!"]
-                  [:says diego "lets start again"]
-                  [:choose [[:beach "Go to the beach"] [:nah "nah"]]]
-                  [:cond
-                   :beach []
-                   :nah [:says diego "nevermind"]]])
+(declare menu)
 
 (def loading-screen
   (ryouta/create-screen
@@ -69,6 +56,8 @@
       {:on-click #(direct/perform [:next-direction])}
       [:div.text-align-center
        [:img.logo {:src "/images/imaginathan-games-logo.png"}]]])))
+
+(declare script_town)
 
 (def character-creation
   (ryouta/create-screen
@@ -96,13 +85,49 @@
         [:h1 "Welcome to the game"]
         [:button.ry-clickable {:on-click #(direct/perform [:screen character-creation])} "start"]])})))
 
-;; Define your script
-;; (def myscript [[:screen loading-screen {:transition? false}]
-;;                [:screen imaginathan-splash]
-;;                [:screen menu]])
+(def script_beach [[:scene beach]
+                   [:says melissumz "The beach is so wonderful!"]
+                   [:group [[:enter diego {:position :right}]
+                            [:move melissumz :left]]]
+                   [:says diego "Hey this is my spot"]
+                   [:says melissumz "Whoa, who is this??"]
+                   [:says diego "I'm diego and this is my beach"]
+                   [:says melissumz "Nuh uh this beach belongs to me"]
+                   [:says melissumz "Right, :vars/main-character ?"]
+                   [:choose ["Yeah totally", "No, Diego is clearly right."]]
+                   [:cond
+                    :%1 [[:says melissumz "Hell yeah! Get lost, stinky dog!"]
+                         [:says diego "Whatever"]
+                         [:exit diego]
+                         [:move melissumz :center]
+                         [:screen menu]]
+                    :%2 [[:says melissumz "Betrayed!"]
+                         [:says diego "Begone you!"]
+                         [:says melissumz ":("]
+                         [:exit melissumz]
+                         [:move diego :center]
+                         [:group [:exit diego
+                                  :scene
+                                  [:screen menu]]]]]])
 
-(def myscript script_town)
-;; (def myscript [[:screen character-creation {:transition? false}]])
+(def script_town [[:scene town]
+                  [:group [[:enter melissumz]
+                           [:says melissumz "Hi it's me melissumz"]]]
+                  [:says melissumz "Your name is :vars/main-character, right?"]
+                  [:says melissumz "Nice to meet you, this is my dog copper!"]
+                  [:says melissumz "I'm just here chillin in this town"]
+                  [:says melissumz "...but it would be nice to go to the beach!"]
+                  [:choose [[:beach "Go to the beach"] [:nah "nah"]]]
+                  [:cond
+                   :beach [script_beach]
+                   :nah [[:says melissumz "ok be like that"]
+                         [:screen menu]]]])
+
+;; Define your script
+(def myscript [[:screen loading-screen {:transition? false}]
+               [:screen imaginathan-splash]
+               [:screen menu]])
+
 
 
 

@@ -14,7 +14,8 @@
     (or
      (.contains (-> e .-target .-classList) "ry-clickable")
      (> (count (:choices @state/dialogue)) 0)
-     (:visible? @state/screen))
+     (:visible? @state/screen)
+     @state/paused?)
     nil
 
     (:typing? @state/dialogue)
@@ -43,8 +44,12 @@
 (defn navbar []
   [:div.ry-navbar
    [:span.ry-pause-button.ry-square.ry-clickable
-    {:on-click #(direct/perform [:pause])}
-    (goog.string/unescapeEntities "&#10074;&#10074;")]])
+    {:on-click #(if @state/paused?
+                  (direct/perform [:unpause])
+                  (direct/perform [:pause]))}
+    (if @state/paused?
+      (goog.string/unescapeEntities "&#10006;")
+      (goog.string/unescapeEntities "&#10074;&#10074;"))]])
 
 (defn dialogue []
   (when (:visible? @state/dialogue)
